@@ -5,7 +5,7 @@ grant usage on schema qw_private to authenticated;
 create table qw_private.accounts(user_id uuid primary key references auth.users(id) on delete cascade,pin_hash text not null,failed integer not null default 0,blocked_until timestamptz,pin_version integer not null default 1);
 create table qw_private.sessions(token_hash text primary key,user_id uuid not null references auth.users(id) on delete cascade,pin_version integer not null,expires timestamptz not null);
 create index sessions_user on qw_private.sessions(user_id);
-create table qw_private.records(user_id uuid not null references auth.users(id) on delete cascade,key text not null,value text not null,version integer not null default 1,primary key(user_id,key));
+create table qw_private.records(user_id uuid not null references auth.users(id) on delete cascade,key text not null,value text not null,version integer not null default 1,updated_at timestamptz not null default now(),primary key(user_id,key));
 alter table qw_private.accounts enable row level security;
 alter table qw_private.sessions enable row level security;
 alter table qw_private.records enable row level security;
@@ -52,25 +52,25 @@ begin
   return jsonb_build_object('ok',true,'token',tok);
  end if;
  if action='save' then
-  if jsonb_typeof(p_payload->'ops') is distinct from 'array' or jsonb_array_length(p_payload->'ops')>36 then return jsonb_build_object('error','Invalid changes.','code',400);end if;
+  if jsonb_typeof(p_payload->'ops') is distinct from 'array' or jsonb_array_length(p_payload->'ops')>100 then return jsonb_build_object('error','Invalid changes.','code',400);end if;
   if (select count(*) from jsonb_array_elements(p_payload->'ops'))<>(select count(distinct e->>'key') from jsonb_array_elements(p_payload->'ops') e) then return jsonb_build_object('error','Duplicate changes.','code',400);end if;
   -- Validate every operation before writing any of them.
   for op in select value from jsonb_array_elements(p_payload->'ops') loop
-   if (op->>'key') is null or op->>'key' !~ '^(note\.[0-6]\.(q[0-2]|response)|done\.[0-6]|current)$' or jsonb_typeof(op->'value') is distinct from 'string' or length(op->>'value')>15000 or coalesce(op->>'base','') !~ '^[0-9]{1,9}$' then return jsonb_build_object('error','Invalid change.','code',400);end if;
+   if (op->>'key') is null or op->>'key' !~ '^(note\.[0-9]{1,5}\.(q[0-2]|response)|done\.[0-9]{1,5}|current)$' or jsonb_typeof(op->'value') is distinct from 'string' or length(op->>'value')>15000 or coalesce(op->>'base','') !~ '^[0-9]{1,9}$' then return jsonb_build_object('error','Invalid change.','code',400);end if;
    if op->>'key' like 'done.%' and op->>'value' not in ('true','false') then return jsonb_build_object('error','Invalid progress.','code',400);end if;
-   if op->>'key'='current' and op->>'value' !~ '^[0-6]$' then return jsonb_build_object('error','Invalid study.','code',400);end if;
+   if op->>'key'='current' and op->>'value' !~ '^[0-9]{1,5}$' then return jsonb_build_object('error','Invalid study.','code',400);end if;
   end loop;
   for op in select value from jsonb_array_elements(p_payload->'ops') loop
    if (op->>'base')::integer=0 then
     insert into qw_private.records(user_id,key,value) values(uid,op->>'key',op->>'value') on conflict(user_id,key) do nothing;
    else
-    update qw_private.records set value=op->>'value',version=version+1 where user_id=uid and key=op->>'key' and version=(op->>'base')::integer;
+    update qw_private.records set value=op->>'value',version=version+1,updated_at=now() where user_id=uid and key=op->>'key' and version=(op->>'base')::integer;
    end if;
    get diagnostics changed=row_count;if changed=0 then conflicts:=conflicts||jsonb_build_array(op->>'key');end if;
   end loop;
  elsif action<>'records' then return jsonb_build_object('error','Unknown action.','code',400);
  end if;
- select coalesce(jsonb_agg(jsonb_build_object('key',key,'value',value,'version',version)),'[]'::jsonb) into rows from qw_private.records where user_id=uid;
+ select coalesce(jsonb_agg(jsonb_build_object('key',key,'value',value,'version',version,'updated_at',updated_at)),'[]'::jsonb) into rows from qw_private.records where user_id=uid;
  return jsonb_build_object('records',rows,'conflicts',conflicts);
 end $$;
 revoke all on function qw_private.call(text,jsonb,text) from public,anon,authenticated;

@@ -1,0 +1,18 @@
+{
+  "bible": {
+    "name": "King James Version (1769)",
+    "source": "https://github.com/scrollmapper/bible_databases",
+    "download": "https://raw.githubusercontent.com/scrollmapper/bible_databases/master/formats/json/KJV.json",
+    "sha256": "f0b09dc49dfb97bb84f03aae1fbf026485048c3cab31a7a41017e2d86ac1d11c"
+  },
+  "commentary": {
+    "name": "Matthew Henry\u2019s Concise Commentary on the Whole Bible",
+    "source": "https://www.ccel.org/ccel/henry/mhcc.xml",
+    "rights": "Public Domain, as declared in the source DC.Rights metadata",
+    "sha256": "4a5509ba5064b54572397ae1a796561ff6ce4a1e18f366af0141a09c5d06fcd6",
+    "note": "Only the public-domain commentary body was extracted. The modern editorial description and site content are excluded."
+  },
+  "books": 66,
+  "chapters": 1189,
+  "verses": 31102
+}
