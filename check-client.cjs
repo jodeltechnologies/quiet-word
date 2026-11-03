@@ -1,0 +1,13 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),{webcrypto}=require('node:crypto');
+const nodes=new Map(),storage=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{hidden:false,value:'',innerHTML:'',querySelector:()=>({disabled:false}),remove(){}});return nodes.get(id)};
+const document={querySelector:s=>node(s),getElementById:node};let request,mode;
+const context={window:{},document,crypto:webcrypto,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},cloud:{unlocked:false,pinForm:m=>{mode=m}},fetch:async(url,options)=>{request={url,options,payload:JSON.parse(options.body)};return{ok:true,json:async()=>request.payload.p_action==='setup'?{ok:true,token:'synthetic-session'}:{configured:true}}}};
+vm.runInNewContext(fs.readFileSync(__dirname+'/public/auth.js','utf8'),context);
+(async()=>{const auth=context.window.qwAuth;
+assert.equal(await auth.start(),false);assert.match(node('app').innerHTML,/Create my PIN/);assert.doesNotMatch(node('app').innerHTML,/type="email"|authPassword|Create account/);
+node('newJournal').onclick();assert.equal(mode,'setup');assert.match(auth.key,/^[0-9a-f]{64}$/);assert.equal(storage.size,0);
+await auth.call('setup',{pin:'4826',confirm:'4826'});assert.equal(storage.get('quiet-time-journal-code'),auth.key);assert.equal(request.payload.p_action,'setup');assert.equal(request.payload.p_token,null);assert.ok(!request.options.headers.Authorization);assert.match(request.url,/quiet_time_pin$/);
+auth.key=null;assert.equal(await auth.start(),true);assert.equal(auth.key,storage.get('quiet-time-journal-code'));
+auth.pinToken='synthetic-session';await auth.call('records');assert.equal(request.payload.p_token,'synthetic-session');
+console.log('PASS PIN welcome, no email signup, random recovery code, persistence after setup, reconnect and session request contract.');
+})();

@@ -1,44 +1,35 @@
 # Quiet Time
 
-A personal Bible study app with all 66 Bible books, 1,189 chapter studies, the complete KJV text, Matthew Henry concise commentary, 32 topic pathways, 24 character pathways, reading plans, weekly Word downloads and seven preserved starter studies. Includes reflection notes, prayer, progress tracking, audio reading, backups and Android installation. Hosting uses static Vercel files and Supabase Auth/Postgres. The app does not require OpenAI services or a ChatGPT subscription.
+Personal Bible study PWA at https://quiet-word-psi.vercel.app/ with all 66 Bible books, 1,189 chapter studies, full KJV text, Matthew Henry concise commentary, topic and character pathways, reading plans, seven starter studies and weekly Word downloads.
 
-## Deploy to Vercel Hobby
+## Access and sync
 
-Import this repository into Jodel Tech and select:
+Email account creation, passwords and confirmation links are removed from the app. Choose Create my PIN, enter and confirm four digits, then save the private recovery code shown after setup. On another device choose Connect my notes, paste that code and enter the same PIN. The app remembers the code locally, so later visits on a connected device only ask for the PIN. Creating a new PIN from the welcome screen creates a separate journal. Change an existing PIN in Settings to keep the same notes.
 
-- Framework: Other
-- Build command: none
-- Output directory: public
-- Project name: quiet-word
+The recovery code is a random 256-bit credential. Keep it private. It can be viewed, copied or downloaded from Settings after unlocking. If every connected device is cleared or lost and the code was not saved, the journal cannot be recovered. Disconnect device removes the local code after syncing and confirmation. It does not delete the cloud journal.
 
-`vercel.json` declares the static output directory and security headers. No paid integrations or domain are needed.
+Internet is required to unlock and sync. While an already unlocked page remains open, notes can be edited in memory and synced on reconnection. Keep the page open until syncing completes. Private notes and PIN-session tokens are not stored in the offline asset cache. Preferences and the journal credential remain device-local. Backups and recovery-code files are plaintext and should be kept private.
 
-The selected Supabase project is `tyhdiagycqhyqmhoeowa`. Quiet Time is deployed at https://quiet-word-psi.vercel.app/. Its schema in `database/schema.sql` has already been applied. Do not reapply it. Only the publishable key is included in the client. Never add a service-role key to this repository.
+## Hosting
 
-In this selected Supabase project, set Authentication > URL Configuration > Site URL to `https://quiet-word-psi.vercel.app/` and add the same URL to the redirect allowlist. Confirm signup and password recovery return to the app. Supabase's default email sender has recipient/rate limits, so verify delivery for the owner's address.
+Repository: jodeltechnologies/quiet-word. Vercel project: quiet-word, static public directory, framework Other, no build command. Supabase project: tyhdiagycqhyqmhoeowa. No OpenAI services or ChatGPT subscription are required. Vercel Hobby and Supabase Free have usage limits and no paid upgrade is authorized.
 
-## Use
+The client sends its publishable key to the public security-invoker RPC quiet_time_pin. No service-role key is included. Supabase Auth settings are not changed or required for this flow. The former email-account RPC and tables are retained for rollback. No cloud notes or PIN accounts existed there when changing access.
 
-Create and confirm your account, sign in, then choose a four-digit PIN. Use the same account and PIN on your other devices. Install from Android Chrome using Install app or Menu > Add to Home screen > Install. In Settings, export or restore a JSON backup. To move notes from the earlier app, export a backup there and restore it here after signing in.
+For a fresh database, apply database/schema.sql and database/pin-access.sql once. Existing deployments already have both applied. Do not reapply create-table statements.
 
-Internet is required to unlock and sync. While an already unlocked page remains open, unsynced changes are retained in memory. Keep it open until syncing finishes. Private notes are not stored in the offline asset cache. Preferences remain device-local. Backups contain plaintext notes and should be kept private.
+## Security
 
-## Weekly Word downloads
+The RPC delegates to a private function using capability authentication, rather than auth.uid(): a hashed recovery code plus a hashed 30-minute PIN session is checked before every journal operation. The PIN uses bcrypt. Records are scoped to the hashed code and callers cannot choose another journal ID. Private tables have RLS and no direct anon/authenticated table grants. PIN guessing pauses for five minutes after five wrong attempts. A changed PIN revokes all prior PIN sessions.
 
-Open Journal > Download weekly notes, or Library > Weekly notes. Choose any date in a week to select Monday to Sunday in Africa/Douala time. Export current notes for studies last edited that week, optionally including Scripture and commentary. Older versions of answers are not reconstructed. A separate seven-study pack follows chapters in Bible order. Word files are generated locally without uploading notes to a document service.
+Concurrent edits to the same answer are held for review. Different fields sync independently. New journals are capped at 10/hour and 100 total for this personal installation. Each journal has a 2,000,000-character note limit. Existing journals remain accessible when creation limits are reached.
 
-`database/expand-library.sql` was applied to preserve account/PIN data and add server timestamps and expanded study IDs. `database/schema.sql` is the full fresh-install schema.
+## Weekly Word files
 
-`node scripts/check-app.cjs` verifies library totals, chapter content, pathway references, week boundaries and a generated Word sample. The Word sample was rendered and inspected. A database transaction verified expanded records, original note IDs, timestamps, conflicts, validation and the PIN lock, then rolled back. Android installation and authenticated two-device UI still require owner-device verification.
+Journal > Download weekly notes or Library > Weekly notes exports current notes from studies last edited in the chosen Monday-to-Sunday week, using Africa/Douala time. Include Scripture and commentary optionally, or prepare seven consecutive chapter studies. Earlier versions of answers are not reconstructed. Documents are prepared on the device without a third-party document service. JSON backup and restore remain available in Settings.
 
-## Security and verification
+## Validation
 
-Journal records, PIN hashes and PIN sessions live in a non-exposed schema with RLS and no direct browser table access. The public RPC is security invoker. Its deliberately privileged private implementation checks the authenticated user and a separate hashed PIN session on every data operation. PINs use bcrypt. Five wrong attempts trigger a five-minute pause. A changed PIN invalidates existing PIN sessions.
+The full Bible content and weekly Word package were checked, rendered and inspected in the library update. PIN checks in database/check-pin-access.sql run in a transaction that rolls back all synthetic journals. Checks cover setup, second-device reading, original and final study IDs, weekly timestamps, conflicts, atomic validation, isolation, wrong/absent/expired sessions, PIN throttling, PIN changes and no direct anonymous table access. Anonymous REST access and the live welcome/setup screen are checked before delivery. Owner-device Android installation and a real cross-device journal still require owner verification.
 
-Different fields sync independently. Concurrent edits to the same answer ask the user to keep both answers or use the account version.
-
-Tests against the actual Supabase database passed for PIN setup, second-session reading, saving, conflict checks, account isolation, throttling and PIN-session invalidation. Synthetic test records were rolled back. Database advisors reported only informational notices for the intentionally inaccessible no-policy private tables. Production sign-in, email recovery, two-device UI and Android installation still need verification after deployment.
-
-Supabase Free may pause projects after low activity. Vercel Hobby and Supabase Free have usage limits. No paid upgrades are authorized.
-
-Vendored client library: @supabase/supabase-js 2.49.8 UMD distribution. See https://github.com/supabase/supabase-js for its MIT license and release information.
+Vendored client library supabase-js 2.49.8 is retained for rollback but no longer loaded by the PIN app. See https://github.com/supabase/supabase-js for its MIT license.

@@ -1,0 +1,27 @@
+begin;
+do $$ declare a text:=encode(extensions.gen_random_bytes(32),'hex');b text:=encode(extensions.gen_random_bytes(32),'hex');ta text;ta2 text;tb text;changed text;r jsonb;i integer;begin
+ if has_table_privilege('anon','qw_private.pin_records','select') or has_table_privilege('anon','qw_private.pin_journals','select') then raise exception 'Direct table access exposed';end if;
+ r:=public.quiet_time_pin('setup','{"pin":"4826","confirm":"4826"}',a);ta:=r->>'token';if ta is null then raise exception 'Setup failed: %',r;end if;
+ r:=public.quiet_time_pin('setup','{"pin":"7315","confirm":"7315"}',b);tb:=r->>'token';if tb is null then raise exception 'Second journal failed';end if;
+ r:=public.quiet_time_pin('save','{"ops":[{"key":"note.1195.q0","value":"Final chapter notes","base":0},{"key":"note.0.response","value":"Starter study notes","base":0},{"key":"current","value":"1195","base":0},{"key":"done.1195","value":"true","base":0}]}',a,ta);
+ if r ? 'error' or jsonb_array_length(r->'records')<>4 then raise exception 'Save failed %',r;end if;
+ r:=public.quiet_time_pin('unlock','{"pin":"4826"}',a);ta2:=r->>'token';if ta2 is null then raise exception 'Second device unlock failed';end if;
+ r:=public.quiet_time_pin('records','{}',a,ta2);if jsonb_array_length(r->'records')<>4 or (r->'records'->0->>'updated_at') is null then raise exception 'Second device sync or weekly timestamp missing';end if;
+ r:=public.quiet_time_pin('records','{}',b,tb);if r->'records'<>'[]'::jsonb then raise exception 'Cross journal disclosure';end if;
+ r:=public.quiet_time_pin('records','{}',b,ta);if r->>'code'<>'423' then raise exception 'Cross journal token accepted';end if;
+ r:=public.quiet_time_pin('records','{}',a,null);if r->>'code'<>'423' then raise exception 'PIN bypass';end if;
+ r:=public.quiet_time_pin('save','{"ops":[{"key":"note.1195.q0","value":"Competing change","base":0}]}',a,ta2);if r->'conflicts'<>'["note.1195.q0"]'::jsonb then raise exception 'Conflict protection failed';end if;
+ r:=public.quiet_time_pin('save','{"ops":[{"key":"note.1195.q0","value":"Should not save","base":1},{"key":"note.1196.q0","value":"Invalid study","base":0}]}',a,ta);if r->>'code'<>'400' then raise exception 'Bad study accepted';end if;
+ r:=public.quiet_time_pin('records','{}',a,ta);if not exists(select 1 from jsonb_array_elements(r->'records') x where x->>'key'='note.1195.q0' and x->>'value'='Final chapter notes') then raise exception 'Validation was not atomic';end if;
+ r:=public.quiet_time_pin('pin','{"pin":"9264","confirm":"9264"}',a,ta);changed:=r->>'token';if changed is null then raise exception 'PIN change failed';end if;
+ r:=public.quiet_time_pin('records','{}',a,ta2);if r->>'code'<>'423' then raise exception 'Prior PIN session remains valid';end if;
+ r:=public.quiet_time_pin('records','{}',a,changed);if jsonb_array_length(r->'records')<>4 then raise exception 'New PIN session invalid';end if;
+ for i in 1..5 loop r:=public.quiet_time_pin('unlock','{"pin":"0000"}',b);end loop;
+ if r->>'code'<>'429' then raise exception 'PIN throttling failed';end if;
+ r:=public.quiet_time_pin('unlock','{"pin":"7315"}',b);if r->>'code'<>'429' then raise exception 'PIN pause bypassed';end if;
+ update qw_private.pin_sessions set expires=now()-interval '1 minute' where token_hash=encode(extensions.digest(changed,'sha256'),'hex');
+ r:=public.quiet_time_pin('records','{}',a,changed);if r->>'code'<>'423' then raise exception 'Expired session accepted';end if;
+end $$;
+set local role anon;
+select public.quiet_time_pin('status','{}',repeat('0',64))->>'configured' as unconfigured_journal;
+rollback;
