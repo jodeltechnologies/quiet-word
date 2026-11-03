@@ -13,9 +13,9 @@ Import this repository into Jodel Tech and select:
 
 `vercel.json` declares the static output directory and security headers. No paid integrations or domain are needed.
 
-The separate Quiet Word Supabase project is already created on Free. Its schema in `database/schema.sql` has already been applied. Do not reapply it. Only the publishable key is included in the client. Never add a service-role key to this repository.
+The selected Supabase project is `tyhdiagycqhyqmhoeowa`. Quiet Word is deployed at https://quiet-word-psi.vercel.app/. Its schema in `database/schema.sql` has already been applied. Do not reapply it. Only the publishable key is included in the client. Never add a service-role key to this repository.
 
-After deployment, set Supabase Authentication > URL Configuration > Site URL to the actual production origin and add that origin with trailing `/` to the redirect allowlist. Confirm signup and password recovery return to the app. Supabase's default email sender has recipient/rate limits, so verify delivery for the owner's address.
+In this selected Supabase project, set Authentication > URL Configuration > Site URL to `https://quiet-word-psi.vercel.app/` and add the same URL to the redirect allowlist. Confirm signup and password recovery return to the app. Supabase's default email sender has recipient/rate limits, so verify delivery for the owner's address.
 
 ## Use
 
