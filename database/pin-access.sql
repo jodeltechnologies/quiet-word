@@ -58,12 +58,12 @@ begin
   if (select count(*) from jsonb_array_elements(p_payload->'ops'))<>(select count(distinct e->>'key') from jsonb_array_elements(p_payload->'ops') e) then return jsonb_build_object('error','Duplicate changes.','code',400);end if;
   select coalesce(sum(length(value)),0) into total_size from qw_private.pin_records where journal_hash=kh;
   for op in select value from jsonb_array_elements(p_payload->'ops') loop
-   if op->>'key' is null or op->>'key' !~ '^(note\.[0-9]{1,4}\.(q[0-2]|response)|done\.[0-9]{1,4}|current)$' or jsonb_typeof(op->'value') is distinct from 'string' or length(op->>'value')>15000 or coalesce(op->>'base','') !~ '^[0-9]{1,9}$' then return jsonb_build_object('error','Invalid change.','code',400);end if;
-   if op->>'key'<>'current' and (split_part(op->>'key','.',2)::integer>1195 or split_part(op->>'key','.',2)<>((split_part(op->>'key','.',2))::integer)::text) then return jsonb_build_object('error','Invalid study.','code',400);end if;
+   if op->>'key' is null or op->>'key' !~ '^(note\.[0-9]{1,5}\.(q[0-2]|response)|done\.[0-9]{1,5}|current)$' or jsonb_typeof(op->'value') is distinct from 'string' or length(op->>'value')>15000 or coalesce(op->>'base','') !~ '^[0-9]{1,9}$' then return jsonb_build_object('error','Invalid change.','code',400);end if;
+   if op->>'key'<>'current' and (split_part(op->>'key','.',2)::integer>99999 or split_part(op->>'key','.',2)<>((split_part(op->>'key','.',2))::integer)::text) then return jsonb_build_object('error','Invalid study.','code',400);end if;
    if op->>'key' like 'done.%' and op->>'value' not in ('true','false') then return jsonb_build_object('error','Invalid progress.','code',400);end if;
    if op->>'key'='current' then
-    if op->>'value' !~ '^[0-9]{1,4}$' then return jsonb_build_object('error','Invalid study.','code',400);end if;
-    if (op->>'value')::integer>1195 then return jsonb_build_object('error','Invalid study.','code',400);end if;
+    if op->>'value' !~ '^[0-9]{1,5}$' then return jsonb_build_object('error','Invalid study.','code',400);end if;
+    if (op->>'value')::integer>99999 then return jsonb_build_object('error','Invalid study.','code',400);end if;
    end if;
    total_size:=total_size+greatest(0,length(op->>'value')-coalesce((select length(value) from qw_private.pin_records where journal_hash=kh and key=op->>'key'),0));
   end loop;

@@ -33,3 +33,15 @@ Journal > Download weekly notes or Library > Weekly notes exports current notes 
 The full Bible content and weekly Word package were checked, rendered and inspected in the library update. PIN checks in database/check-pin-access.sql run in a transaction that rolls back all synthetic journals. Checks cover setup, second-device reading, original and final study IDs, weekly timestamps, conflicts, atomic validation, isolation, wrong/absent/expired sessions, PIN throttling, PIN changes and no direct anonymous table access. Anonymous REST access and the live welcome/setup screen are checked before delivery. Owner-device Android installation and a real cross-device journal still require owner verification.
 
 Vendored client library supabase-js 2.49.8 is retained for rollback but no longer loaded by the PIN app. See https://github.com/supabase/supabase-js for its MIT license.
+
+## Storytelling library
+
+The main opening route now leads to Bible stories and spiritual lessons. The connected journey contains all 168 original 1904 retellings by Jesse Lyman Hurlbut, reproduced from the Heritage History 2009 educational edition with source attribution. Three original focused studies address Eli and his sons, David/Nathan/Solomon and the prophet in 1 Kings 13. Each retelling has an original spiritual reflection, passage references, questions, prayer, synced notes and reading-aloud support. Historic retellings and commentary are interpretation and are visibly distinguished from the biblical text.
+
+A separate coverage index assigns every KJV verse exactly once to 3,705 passage sections. It covers all 31,102 verses and all 66 books, including passages not selected by the historical storyteller. Poetry, law, letters and visions are identified rather than represented as invented narrative events. There is no assertion of one universally agreed count of distinct Bible stories.
+
+Stable journal IDs: the existing seven studies and chapter IDs stay 0–1195. Passage section IDs are 50000 plus their canonical zero-based starting verse index. The 168 historical story IDs are 90000–90167, and the three original featured IDs are 90200–90202. IDs must not be reassigned. database/story-ids.sql updates only the existing private RPC ID validation to permit these five-digit IDs, preserving PIN/session checks and note scoping.
+
+Weekly Word exports include the retelling, its source attribution, spiritual reflection and saved responses. A seven-story preparation pack is available alongside the previous chapter pack. Audio uses the browser device voice rather than the reference creator’s voice. Story files are cached after opening.
+
+Source: Jesse Lyman Hurlbut, Story of the Bible Told for Young and Old. Original Copyright 1904 by Jesse Lyman Hurlbut. Distributed by Heritage History 2009. https://www.heritage-history.com/index.php?author=hurlbut&book=bible&c=read. Original public-domain content is reproduced without alteration for this personal educational app, with attribution in both the story pages and Word export. Source maps and source hashes document the extraction.
