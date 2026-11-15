@@ -45,3 +45,9 @@ Stable journal IDs: the existing seven studies and chapter IDs stay 0–1195. Pa
 Weekly Word exports include the retelling, its source attribution, spiritual reflection and saved responses. A seven-story preparation pack is available alongside the previous chapter pack. Audio uses the browser device voice rather than the reference creator’s voice. Story files are cached after opening.
 
 Source: Jesse Lyman Hurlbut, Story of the Bible Told for Young and Old. Original Copyright 1904 by Jesse Lyman Hurlbut. Distributed by Heritage History 2009. https://www.heritage-history.com/index.php?author=hurlbut&book=bible&c=read. Original public-domain content is reproduced without alteration for this personal educational app, with attribution in both the story pages and Word export. Source maps and source hashes document the extraction.
+
+### Book-by-book retellings
+
+The first Gospel batch adds 71 studies from Matthew and 35 from Mark. Each book has a connected path in Scripture order, with original retellings, parables and teaching studies, spiritual lessons, reflection questions and exact verse ranges. All 1,749 verses of these two books are assigned to the new studies in order. The Bible text and the retellings remain separately labelled in the reader.
+
+Edit the two source files in `source/` and run `python scripts/build-gospel-retellings.py` to regenerate the study catalogue. The builder checks for incomplete or repeated Scripture coverage. Matthew uses stable journal IDs 91000–91070, and Mark uses 91071–91105. Preserve these IDs when editing existing entries and reserve a new range for each subsequent book.
