@@ -55,3 +55,5 @@ Edit the book study source files in `source/` and run `python scripts/build-book
 The next batch adds 61 studies from Luke (IDs 91106–91166) and 47 from John (IDs 91167–91213). All four Gospels can now be read in order in 214 original studies, with 385 connected studies across the complete catalogue.
 
 The third batch adds Acts (49), Romans (26), 1 Corinthians (24), 2 Corinthians (15) and Galatians (11). This gives 339 original book-by-book studies from Matthew through Galatians and 510 connected studies in the catalogue. Stable IDs for this batch run from 91214 through 91338. Cross-chapter ranges preserve each verse reference in the reader and Word. The letters use guided explanations of the argument and historical exchanges.
+
+The fourth batch adds 59 studies from Ephesians through Philemon (IDs 91339–91397). The catalogue now includes 569 connected studies, with 398 original studies by passage across 18 books from Matthew through Philemon.

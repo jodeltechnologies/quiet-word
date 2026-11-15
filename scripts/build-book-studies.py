@@ -15,6 +15,15 @@ BOOKS = [
     (45, '1 Corinthians', 91289, 24),
     (46, '2 Corinthians', 91313, 15),
     (47, 'Galatians', 91328, 11),
+    (48, 'Ephesians', 91339, 11),
+    (49, 'Philippians', 91350, 7),
+    (50, 'Colossians', 91357, 7),
+    (51, '1 Thessalonians', 91364, 7),
+    (52, '2 Thessalonians', 91371, 4),
+    (53, '1 Timothy', 91375, 10),
+    (54, '2 Timothy', 91385, 6),
+    (55, 'Titus', 91391, 5),
+    (56, 'Philemon', 91396, 2),
 ]
 stories = []
 for book, name, first_id, count in BOOKS:
