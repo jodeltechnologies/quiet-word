@@ -50,6 +50,8 @@ Source: Jesse Lyman Hurlbut, Story of the Bible Told for Young and Old. Original
 
 The first Gospel batch adds 71 studies from Matthew and 35 from Mark. Each book has a connected path in Scripture order, with original retellings, parables and teaching studies, spiritual lessons, reflection questions and exact verse ranges. All 1,749 verses of these two books are assigned to the new studies in order. The Bible text and the retellings remain separately labelled in the reader.
 
-Edit the Gospel source files in `source/` and run `python scripts/build-gospel-retellings.py` to regenerate the study catalogue. The builder checks for incomplete or repeated Scripture coverage. Matthew uses stable journal IDs 91000–91070, and Mark uses 91071–91105. Preserve these IDs when editing existing entries and reserve a new range for each subsequent book.
+Edit the book study source files in `source/` and run `python scripts/build-book-studies.py` to regenerate the study catalogue. The builder checks for incomplete or repeated Scripture coverage. Matthew uses stable journal IDs 91000–91070, and Mark uses 91071–91105. Preserve these IDs when editing existing entries and reserve a new range for each subsequent book.
 
 The next batch adds 61 studies from Luke (IDs 91106–91166) and 47 from John (IDs 91167–91213). All four Gospels can now be read in order in 214 original studies, with 385 connected studies across the complete catalogue.
+
+The third batch adds Acts (49), Romans (26), 1 Corinthians (24), 2 Corinthians (15) and Galatians (11). This gives 339 original book-by-book studies from Matthew through Galatians and 510 connected studies in the catalogue. Stable IDs for this batch run from 91214 through 91338. Cross-chapter ranges preserve each verse reference in the reader and Word. The letters use guided explanations of the argument and historical exchanges.

@@ -2,7 +2,7 @@ const STARTER_COUNT=7;
 let offset=STARTER_COUNT;const bookOffsets=[];
 bibleBooks.forEach((b,i)=>{b.name=b.name.replace(/^I /,'1 ').replace(/^II /,'2 ').replace(/^III /,'3 ');b.profile=bookProfiles[i];bookOffsets.push(offset);for(let c=1;c<=b.chapters;c++)lessons.push({title:`${b.name} ${c}`,subtitle:b.titles[c-1],text:`${b.name} ${c}`,book:i,chapter:c,kind:'chapter'});offset+=b.chapters});
 const CHAPTER_STUDIES=lessons.length;
-for (const study of gospelRetellings) bibleStories.push(study);
+for (const study of bibleBookStudies) bibleStories.push(study);
 for(const s of [...bibleStories,...scriptureScenes])lessons[s.id]=s;
 const TOTAL_STUDIES=lessons.length,bookCache=new Map();
 async function loadBook(i){if(bookCache.has(i))return bookCache.get(i);const promise=fetch(`./data/${String(i).padStart(2,'0')}.json`).then(r=>{if(!r.ok)throw Error('This book is unavailable. Connect to the internet and retry.');return r.json()}).catch(e=>{bookCache.delete(i);throw e});bookCache.set(i,promise);return promise}

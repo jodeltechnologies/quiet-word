@@ -4,9 +4,9 @@ function element(key){if(!nodes.has(key))nodes.set(key,{innerHTML:'',textContent
 const document={querySelector:element,getElementById:id=>element('#'+id),querySelectorAll:s=>s==='[data-key]'?['q0','q1','q2','response'].map(k=>Object.assign(element('#'+k),{dataset:{key:k},value:''})):[],body:{classList:{toggle(){}}},documentElement:{style:{setProperty(){}}},activeElement:null};
 const cloud={unlocked:true,capture(){this.captured=true},async sync(){}};
 const context=vm.createContext({window:{cloud,addEventListener(){},scrollTo(){}},cloud,document,navigator:{},localStorage:{getItem(){return null},setItem(){}},location:{hash:'#home'},TextEncoder,TextDecoder,Uint8Array,Uint32Array,DataView,Map,Set,Intl,Date,URLSearchParams,console,setTimeout(){},clearTimeout(){},fetch:async url=>({ok:true,json:async()=>JSON.parse(fs.readFileSync(path.join(root,url),'utf8'))})});
-for(const file of ['lessons.js','library-index.js','book-profiles.js','study-paths.js','stories.js','gospel-retellings.js','library.js','library-ui.js','story-reader.js','weekly-docx.js','app.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
+for(const file of ['lessons.js','library-index.js','book-profiles.js','study-paths.js','stories.js','book-studies.js','library.js','library-ui.js','story-reader.js','weekly-docx.js','app.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
 (async()=>{const result=await vm.runInContext(`(async()=>{
-if(bibleStories.length!==171+gospelRetellings.length||scriptureScenes.length!==3705)throw Error('Catalogue totals');
+if(bibleStories.length!==171+bibleBookStudies.length||scriptureScenes.length!==3705)throw Error('Catalogue totals');
 const seen=new Set();let verses=0;
 for(const s of scriptureScenes){const book=await loadBook(s.book),ch=book.chapters[s.chapter-1];if(s.start<1||s.end>ch.verses.length||s.end<s.start)throw Error('Bad episode');for(let v=s.start;v<=s.end;v++){const key=s.book+':'+s.chapter+':'+v;if(seen.has(key))throw Error('Duplicate coverage');seen.add(key);verses++}}
 if(verses!==31102||storyCoverage.some(x=>x.covered!==x.verses))throw Error('Coverage gap');
@@ -14,17 +14,19 @@ for(const s of bibleStories){const l=await prepareStudy(s.id);if(!l.story.length
 renderStoryHome();if(!app.innerHTML.includes('Stories from your examples')||!app.innerHTML.includes('The Prophet Who Turned Back'))throw Error('Home presentation');
 $('#storyCollection').value='retellings';$('#storyBook').value='all';$('#storyQuery').value='';renderStoryCollection();if(!$('#storyCount').textContent.includes(String(bibleStories.length)))throw Error('Story listing');
 $('#storyQuery').value='The Prophet Who Turned Back';$('#storyQuery').events.input();if(!$('#storyCount').textContent.includes('1 of 1'))throw Error('Search');
-for (const s of gospelRetellings) {
+for (const s of bibleBookStudies) {
   const study = await prepareStudy(s.id);
-  if (study.verses.length !== s.end - s.start + 1 || study.verses[0][0] !== s.text.split('–')[0]) throw Error('Incorrect Gospel verse range: ' + s.text);
+  const name = bibleBooks[s.chapters[0][0]].name;
+  const firstChapter = s.chapters[0][1], lastChapter = s.chapters.at(-1)[1];
+  if (study.verses[0][0] !== name+' '+firstChapter+':'+s.start || study.verses.at(-1)[0] !== name+' '+lastChapter+':'+s.end) throw Error('Incorrect study verse range: ' + s.text);
 }
 $('#storyQuery').value='';
 renderStoryCollection(40);
-if ($('#storyCollection').value !== 'gospels' || !$('#storyCount').textContent.includes('35') || !$('#storyResults').innerHTML.includes('The Road, the River and the Wilderness')) throw Error('Mark book route');
+if ($('#storyCollection').value !== 'books' || !$('#storyCount').textContent.includes('35') || !$('#storyResults').innerHTML.includes('The Road, the River and the Wilderness')) throw Error('Mark book route');
 $('#storyQuery').value='';
 for (const [book, count, title] of [[41,61,'Zechariah Comes Out Silent'],[42,47,'The Word Comes to Dwell Among Us']]) {
   renderStoryCollection(book);
-  if ($('#storyCollection').value !== 'gospels' || !$('#storyCount').textContent.endsWith('of '+count+' studies') || !$('#storyResults').innerHTML.includes(title)) throw Error('Gospel collection route: ' + book);
+  if ($('#storyCollection').value !== 'books' || !$('#storyCount').textContent.endsWith('of '+count+' studies') || !$('#storyResults').innerHTML.includes(title)) throw Error('Gospel collection route: ' + book);
 }
 const johnStart=await prepareStudy(91167);
 if(johnStart.verses[0][0]!=='John 1:1'||johnStart.verses.at(-1)[0]!=='John 1:18')throw Error('John opening range');
@@ -38,6 +40,20 @@ state.notes[91106]={q0:"Waiting did not make their prayer pointless."};
 const gospelDocx=buildStudyDocx([{id:91106,lesson:await prepareStudy(91106)}],{from:'2026-11-09',to:'2026-11-15',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
 const gospelXml = new TextDecoder().decode(gospelDocx);
 if(!gospelXml.includes('Waiting did not make their prayer pointless.')||!gospelXml.includes('Luke 1:25')||gospelXml.includes('Luke 1:26'))throw Error('Gospel Word export');
+const arrest = bibleBookStudies.find(s=>s.text==='Acts 21:27–22:21');
+const arrestStudy = await prepareStudy(arrest.id);
+if (arrestStudy.verses.length !== 35 || arrestStudy.verses[13][0] !== 'Acts 21:40' || arrestStudy.verses[14][0] !== 'Acts 22:1') throw Error('Acts chapter transition');
+location.hash='#study/'+arrest.id;
+await studyNarrative(arrest.id);
+if (!app.innerHTML.includes('<sup>21:40</sup>') || !app.innerHTML.includes('<sup>22:1</sup>')) throw Error('Cross-chapter verse display');
+renderStoryCollection(47);
+if ($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 11 studies')) throw Error('Galatians book route');
+location.hash='#study/91328';
+await studyNarrative(91328);
+if (!app.innerHTML.includes('Follow the letter')) throw Error('Letter reader');
+const letterStudy=await prepareStudy(91328);
+const letterDocx=buildStudyDocx([{id:91328,lesson:letterStudy}],{from:'2026-11-09',to:'2026-11-15',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
+if(!new TextDecoder().decode(letterDocx).includes('Follow the Letter'))throw Error('Letter Word export');
 location.hash='#study/90200';await studyNarrative(90200);if(!app.innerHTML.includes('Spiritual lessons')||!app.innerHTML.includes('The account began with wrongdoing'))throw Error('Narrative reader');
 $('#q0').value='I need to act on a responsibility I have avoided.';$('#q0').oninput();if(!state.notes[90200]?.q0||!state.dates[90200]||!cloud.captured)throw Error('Notes contract');
 $('#complete').onclick();if(!state.complete.includes(90200))throw Error('Progress');
