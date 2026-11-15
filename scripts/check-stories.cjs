@@ -31,11 +31,13 @@ for (const [book, count, title] of [[41,61,'Zechariah Comes Out Silent'],[42,47,
 $('#storyBook').value='all';
 $('#storyCollection').value='expanded';
 $('#storyCollection').events.change();
-if(expandedRetellings.length!==129||!$('#storyCount').textContent.endsWith('of 129 studies')||!$('#storyResults').innerHTML.includes('The Family Into Which Jesus Came'))throw Error('Expanded retelling collection');
+if(expandedRetellings.length!==151||!$('#storyCount').textContent.endsWith('of 151 studies')||!$('#storyResults').innerHTML.includes('The Family Into Which Jesus Came'))throw Error('Expanded retelling collection');
 const matthewRun=bibleBookStudies.filter(s=>s.chapters[0][0]===39);
 if(matthewRun.length!==71||matthewRun.at(-1).text!=='Matthew 28:16–20'||matthewRun.some(study=>!expandedRetellings.includes(study)))throw Error('Incomplete Matthew sequence');
 const markRun=bibleBookStudies.filter(study=>study.chapters[0][0]===40);
 if(markRun.length!==35||markRun[0].text!=='Mark 1:1–13'||markRun.at(-1).text!=='Mark 16:9–20'||markRun.some(study=>!expandedRetellings.includes(study)))throw Error('Incomplete Mark sequence');
+const lukeOpening=bibleBookStudies.filter(study=>study.chapters[0][0]===41).slice(0,28);
+if(lukeOpening.length!==28||lukeOpening.at(-1).text!=='Luke 11:1–13'||lukeOpening.some(study=>!expandedRetellings.includes(study)))throw Error('Incomplete opening Luke sequence');
 const samaritan=expandedRetellings.find(s=>s.text==='Luke 10:25–37');
 location.hash='#study/'+samaritan.id;
 await studyNarrative(samaritan.id);
