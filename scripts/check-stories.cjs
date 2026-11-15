@@ -64,6 +64,12 @@ if (arrestStudy.verses.length !== 35 || arrestStudy.verses[13][0] !== 'Acts 21:4
 location.hash='#study/'+arrest.id;
 await studyNarrative(arrest.id);
 if (!app.innerHTML.includes('<sup>21:40</sup>') || !app.innerHTML.includes('<sup>22:1</sup>')) throw Error('Cross-chapter verse display');
+renderStoryCollection(44);
+if ($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 26 studies')||!$('#storyResults').innerHTML.includes('Paul Explains Why He Wants to Come to Rome')) throw Error('Romans book route');
+const romansOpening = bibleBookStudies.filter(study=>study.chapters[0][0]===44).slice(0,12);
+if (romansOpening.length!==12||romansOpening[0].text!=='Romans 1:1–17'||romansOpening.at(-1).text!=='Romans 6:15–23'||romansOpening.some(study=>study.story.length!==4||study.story.join(' ').split(' ').length<200)) throw Error('Incomplete opening Romans sequence');
+const romansStart = await prepareStudy(romansOpening[0].id);
+if (!romansStart.isLetter||romansStart.verses.length!==17||romansStart.verses.at(-1)[0]!=='Romans 1:17') throw Error('Romans opening study');
 renderStoryCollection(47);
 if ($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 11 studies')) throw Error('Galatians book route');
 location.hash='#study/91328';
