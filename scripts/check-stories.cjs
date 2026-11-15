@@ -31,7 +31,7 @@ for (const [book, count, title] of [[41,61,'Zechariah Comes Out Silent'],[42,47,
 $('#storyBook').value='all';
 $('#storyCollection').value='expanded';
 $('#storyCollection').events.change();
-if(expandedRetellings.length!==17||!$('#storyCount').textContent.endsWith('of 17 studies')||!$('#storyResults').innerHTML.includes('The Good Samaritan'))throw Error('Expanded retelling collection');
+if(expandedRetellings.length!==37||!$('#storyCount').textContent.endsWith('of 37 studies')||!$('#storyResults').innerHTML.includes('The Good Samaritan'))throw Error('Expanded retelling collection');
 const samaritan=expandedRetellings.find(s=>s.text==='Luke 10:25–37');
 location.hash='#study/'+samaritan.id;
 await studyNarrative(samaritan.id);
