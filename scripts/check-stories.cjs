@@ -31,9 +31,9 @@ for (const [book, count, title] of [[41,61,'Zechariah Comes Out Silent'],[42,47,
 $('#storyBook').value='all';
 $('#storyCollection').value='expanded';
 $('#storyCollection').events.change();
-if(expandedRetellings.length!==69||!$('#storyCount').textContent.endsWith('of 69 studies')||!$('#storyResults').innerHTML.includes('The Family Into Which Jesus Came'))throw Error('Expanded retelling collection');
-const matthewRun=bibleBookStudies.filter(s=>s.chapters[0][0]===39).slice(0,39);
-if(matthewRun.length!==39||matthewRun.at(-1).text!=='Matthew 15:21–39'||matthewRun.some(study=>!expandedRetellings.includes(study)))throw Error('Incomplete opening Matthew sequence');
+if(expandedRetellings.length!==100||!$('#storyCount').textContent.endsWith('of 100 studies')||!$('#storyResults').innerHTML.includes('The Family Into Which Jesus Came'))throw Error('Expanded retelling collection');
+const matthewRun=bibleBookStudies.filter(s=>s.chapters[0][0]===39);
+if(matthewRun.length!==71||matthewRun.at(-1).text!=='Matthew 28:16–20'||matthewRun.some(study=>!expandedRetellings.includes(study)))throw Error('Incomplete Matthew sequence');
 const samaritan=expandedRetellings.find(s=>s.text==='Luke 10:25–37');
 location.hash='#study/'+samaritan.id;
 await studyNarrative(samaritan.id);
