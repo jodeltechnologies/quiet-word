@@ -28,6 +28,14 @@ for (const [book, count, title] of [[41,61,'Zechariah Comes Out Silent'],[42,47,
   renderStoryCollection(book);
   if ($('#storyCollection').value !== 'books' || !$('#storyCount').textContent.endsWith('of '+count+' studies') || !$('#storyResults').innerHTML.includes(title)) throw Error('Gospel collection route: ' + book);
 }
+$('#storyBook').value='all';
+$('#storyCollection').value='expanded';
+$('#storyCollection').events.change();
+if(expandedRetellings.length!==17||!$('#storyCount').textContent.endsWith('of 17 studies')||!$('#storyResults').innerHTML.includes('The Good Samaritan'))throw Error('Expanded retelling collection');
+const samaritan=expandedRetellings.find(s=>s.text==='Luke 10:25–37');
+location.hash='#study/'+samaritan.id;
+await studyNarrative(samaritan.id);
+if(!app.innerHTML.includes('the innkeeper')||!app.innerHTML.includes('showed him mercy'))throw Error('Expanded retelling reader');
 const johnStart=await prepareStudy(91167);
 if(johnStart.verses[0][0]!=='John 1:1'||johnStart.verses.at(-1)[0]!=='John 1:18')throw Error('John opening range');
 location.hash='#study/91000';
