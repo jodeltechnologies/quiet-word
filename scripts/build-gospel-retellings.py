@@ -4,7 +4,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 # Preserve these allocations when publishing subsequent batches.
-BOOKS = [(39, 'Matthew', 91000, 71), (40, 'Mark', 91071, 35)]
+BOOKS = [
+    (39, 'Matthew', 91000, 71),
+    (40, 'Mark', 91071, 35),
+    (41, 'Luke', 91106, 61),
+    (42, 'John', 91167, 47),
+]
 stories = []
 for book, name, first_id, count in BOOKS:
     chapters = json.loads((ROOT / 'public' / 'data' / f'{book:02}.json').read_text())['chapters']

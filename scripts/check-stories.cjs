@@ -22,15 +22,22 @@ $('#storyQuery').value='';
 renderStoryCollection(40);
 if ($('#storyCollection').value !== 'gospels' || !$('#storyCount').textContent.includes('35') || !$('#storyResults').innerHTML.includes('The Road, the River and the Wilderness')) throw Error('Mark book route');
 $('#storyQuery').value='';
+for (const [book, count, title] of [[41,61,'Zechariah Comes Out Silent'],[42,47,'The Word Comes to Dwell Among Us']]) {
+  renderStoryCollection(book);
+  if ($('#storyCollection').value !== 'gospels' || !$('#storyCount').textContent.endsWith('of '+count+' studies') || !$('#storyResults').innerHTML.includes(title)) throw Error('Gospel collection route: ' + book);
+}
+const johnStart=await prepareStudy(91167);
+if(johnStart.verses[0][0]!=='John 1:1'||johnStart.verses.at(-1)[0]!=='John 1:18')throw Error('John opening range');
 location.hash='#study/91000';
 await studyNarrative(91000);
 if(!app.innerHTML.includes('Matthew 1:1')||!app.innerHTML.includes('#study/91001'))throw Error('Gospel reader or next link');
 $('#q0').value='The exile did not end the line of David.';
 $('#q0').oninput();
 if(!state.notes[91000]?.q0||!cloud.captured)throw Error('Gospel notes contract');
-const gospelDocx=buildStudyDocx([{id:91000,lesson:await prepareStudy(91000)}],{from:'2026-11-09',to:'2026-11-15',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
+state.notes[91106]={q0:"Waiting did not make their prayer pointless."};
+const gospelDocx=buildStudyDocx([{id:91106,lesson:await prepareStudy(91106)}],{from:'2026-11-09',to:'2026-11-15',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
 const gospelXml = new TextDecoder().decode(gospelDocx);
-if(!gospelXml.includes('The exile did not end the line of David.')||!gospelXml.includes('Matthew 1:17')||gospelXml.includes('Matthew 1:18'))throw Error('Gospel Word export');
+if(!gospelXml.includes('Waiting did not make their prayer pointless.')||!gospelXml.includes('Luke 1:25')||gospelXml.includes('Luke 1:26'))throw Error('Gospel Word export');
 location.hash='#study/90200';await studyNarrative(90200);if(!app.innerHTML.includes('Spiritual lessons')||!app.innerHTML.includes('The account began with wrongdoing'))throw Error('Narrative reader');
 $('#q0').value='I need to act on a responsibility I have avoided.';$('#q0').oninput();if(!state.notes[90200]?.q0||!state.dates[90200]||!cloud.captured)throw Error('Notes contract');
 $('#complete').onclick();if(!state.complete.includes(90200))throw Error('Progress');
