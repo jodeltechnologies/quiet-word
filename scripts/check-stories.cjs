@@ -12,7 +12,9 @@ for(const s of scriptureScenes){const book=await loadBook(s.book),ch=book.chapte
 if(verses!==31102||storyCoverage.some(x=>x.covered!==x.verses))throw Error('Coverage gap');
 for(const s of bibleStories){const l=await prepareStudy(s.id);if(!l.story.length||!l.verses.length||l.questions.length!==3||!l.meaning.length)throw Error('Incomplete story '+s.id);for(const[b,c]of s.chapters)if(!bibleBooks[b]||c<1||c>bibleBooks[b].chapters)throw Error('Invalid reference')}
 renderStoryHome();if(!app.innerHTML.includes('Stories from your examples')||!app.innerHTML.includes('The Prophet Who Turned Back'))throw Error('Home presentation');
-$('#storyCollection').value='retellings';$('#storyBook').value='all';$('#storyQuery').value='';renderStoryCollection();if(!$('#storyCount').textContent.includes(String(bibleStories.length)))throw Error('Story listing');
+$('#storyBook').value='all';$('#storyQuery').value='';renderStoryCollection();
+if ($('#storyCollection').value!=='books'||app.innerHTML.includes('value="expanded"')||!$('#storyCount').textContent.endsWith('of '+bibleBookStudies.length+' studies')||!$('#storyResults').innerHTML.includes('The Family Into Which Jesus Came'))throw Error('Default book-by-book collection');
+$('#storyCollection').value='retellings';$('#storyCollection').events.change();if(!$('#storyCount').textContent.includes(String(bibleStories.length)))throw Error('Story listing');
 $('#storyQuery').value='The Prophet Who Turned Back';$('#storyQuery').events.input();if(!$('#storyCount').textContent.includes('1 of 1'))throw Error('Search');
 for (const s of bibleBookStudies) {
   const study = await prepareStudy(s.id);
@@ -29,20 +31,17 @@ for (const [book, count, title] of [[41,61,'Zechariah Comes Out Silent'],[42,47,
   if ($('#storyCollection').value !== 'books' || !$('#storyCount').textContent.endsWith('of '+count+' studies') || !$('#storyResults').innerHTML.includes(title)) throw Error('Gospel collection route: ' + book);
 }
 $('#storyBook').value='all';
-$('#storyCollection').value='expanded';
-$('#storyCollection').events.change();
-if(expandedRetellings.length!==263||!$('#storyCount').textContent.endsWith('of 263 studies')||!$('#storyResults').innerHTML.includes('The Family Into Which Jesus Came'))throw Error('Expanded retelling collection');
 const matthewRun=bibleBookStudies.filter(s=>s.chapters[0][0]===39);
-if(matthewRun.length!==71||matthewRun.at(-1).text!=='Matthew 28:16–20'||matthewRun.some(study=>!expandedRetellings.includes(study)))throw Error('Incomplete Matthew sequence');
+if(matthewRun.length!==71||matthewRun.at(-1).text!=='Matthew 28:16–20'||matthewRun.some(study=>study.story.length<4||study.story.join(' ').trim().split(/\\s+/).length<200))throw Error('Incomplete Matthew sequence');
 const markRun=bibleBookStudies.filter(study=>study.chapters[0][0]===40);
-if(markRun.length!==35||markRun[0].text!=='Mark 1:1–13'||markRun.at(-1).text!=='Mark 16:9–20'||markRun.some(study=>!expandedRetellings.includes(study)))throw Error('Incomplete Mark sequence');
+if(markRun.length!==35||markRun[0].text!=='Mark 1:1–13'||markRun.at(-1).text!=='Mark 16:9–20'||markRun.some(study=>study.story.length<4||study.story.join(' ').trim().split(/\\s+/).length<200))throw Error('Incomplete Mark sequence');
 const lukeRun=bibleBookStudies.filter(study=>study.chapters[0][0]===41);
-if(lukeRun.length!==61||lukeRun.at(-1).text!=='Luke 24:36–53'||lukeRun.some(study=>!expandedRetellings.includes(study)))throw Error('Incomplete Luke sequence');
+if(lukeRun.length!==61||lukeRun.at(-1).text!=='Luke 24:36–53'||lukeRun.some(study=>study.story.length<4||study.story.join(' ').trim().split(/\\s+/).length<200))throw Error('Incomplete Luke sequence');
 const johnRun=bibleBookStudies.filter(study=>study.chapters[0][0]===42);
-if(johnRun.length!==47||johnRun[0].text!=='John 1:1–18'||johnRun.at(-1).text!=='John 21:15–25'||johnRun.some(study=>!expandedRetellings.includes(study)))throw Error('Incomplete John sequence');
+if(johnRun.length!==47||johnRun[0].text!=='John 1:1–18'||johnRun.at(-1).text!=='John 21:15–25'||johnRun.some(study=>study.story.length<4||study.story.join(' ').trim().split(/\\s+/).length<200))throw Error('Incomplete John sequence');
 const actsRun=bibleBookStudies.filter(study=>study.chapters[0][0]===43);
-if(actsRun.length!==49||actsRun[0].text!=='Acts 1:1–11'||actsRun.at(-1).text!=='Acts 28:17–31'||actsRun.some(study=>!expandedRetellings.includes(study)))throw Error('Incomplete Acts sequence');
-const samaritan=expandedRetellings.find(s=>s.text==='Luke 10:25–37');
+if(actsRun.length!==49||actsRun[0].text!=='Acts 1:1–11'||actsRun.at(-1).text!=='Acts 28:17–31'||actsRun.some(study=>study.story.length<4||study.story.join(' ').trim().split(/\\s+/).length<200))throw Error('Incomplete Acts sequence');
+const samaritan=bibleBookStudies.find(s=>s.text==='Luke 10:25–37');
 location.hash='#study/'+samaritan.id;
 await studyNarrative(samaritan.id);
 if(!app.innerHTML.includes('the innkeeper')||!app.innerHTML.includes('showed him mercy'))throw Error('Expanded retelling reader');
@@ -72,8 +71,8 @@ const romansStart = await prepareStudy(romansRun[0].id);
 if (!romansStart.isLetter||romansStart.verses.length!==17||romansStart.verses.at(-1)[0]!=='Romans 1:17') throw Error('Romans opening study');
 renderStoryCollection(45);
 if ($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 24 studies')||!$('#storyResults').innerHTML.includes('A Household Reports a Division')) throw Error('1 Corinthians book route');
-const firstCorinthians = bibleBookStudies.filter(study=>study.chapters[0][0]===45).slice(0,14);
-if (firstCorinthians.length!==14||firstCorinthians[0].text!=='1 Corinthians 1:1–17'||firstCorinthians.at(-1).text!=='1 Corinthians 10:23–33'||firstCorinthians.some(study=>study.story.length!==4||study.story.join(' ').split(' ').length<350)) throw Error('Incomplete opening 1 Corinthians sequence');
+const firstCorinthians = bibleBookStudies.filter(study=>study.chapters[0][0]===45).slice(0,16);
+if (firstCorinthians.length!==16||firstCorinthians[0].text!=='1 Corinthians 1:1–17'||firstCorinthians.at(-1).text!=='1 Corinthians 11:17–34'||firstCorinthians.some(study=>study.story.length!==4||study.story.join(' ').split(' ').length<350)) throw Error('Incomplete opening 1 Corinthians sequence');
 const corinthiansStart = await prepareStudy(firstCorinthians[0].id);
 if (!corinthiansStart.isLetter||corinthiansStart.verses.length!==17||corinthiansStart.verses.at(-1)[0]!=='1 Corinthians 1:17') throw Error('1 Corinthians opening study');
 renderStoryCollection(47);
