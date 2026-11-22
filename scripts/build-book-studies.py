@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 # Preserve these allocations when publishing subsequent batches.
 BOOKS = [
+    (8, '1 Samuel', 92000, 4, 3),
     (39, 'Matthew', 91000, 71),
     (40, 'Mark', 91071, 35),
     (41, 'Luke', 91106, 61),
@@ -26,9 +27,9 @@ BOOKS = [
     (56, 'Philemon', 91396, 2),
 ]
 stories = []
-for book, name, first_id, count in BOOKS:
+for book, name, first_id, count, *published_chapters in BOOKS:
     chapters = json.loads((ROOT / 'public' / 'data' / f'{book:02}.json').read_text())['chapters']
-    expected = [(c, v) for c, chapter in enumerate(chapters, 1)
+    expected = [(c, v) for c, chapter in enumerate(chapters[:published_chapters[0]] if published_chapters else chapters, 1)
                 for v in range(1, len(chapter['verses']) + 1)]
     slug = name.lower().replace(' ', '-')
     suffix = 'retellings' if book < 43 else 'studies'
@@ -64,7 +65,7 @@ for book, name, first_id, count in BOOKS:
                             lesson=lesson, question=question))
     if actual != expected:
         raise ValueError(f'{name}: verse coverage must be complete and in order')
-    print(f'{name}: {count} studies, {len(chapters)} chapters, {len(actual)} verses')
+    print(f'{name}: {count} studies, {published_chapters[0] if published_chapters else len(chapters)} published chapters, {len(actual)} verses')
 
 ids = [item['id'] for item in stories]
 if len(ids) != len(set(ids)) or min(ids) < 91000 or max(ids) > 99999:

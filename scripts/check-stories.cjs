@@ -7,6 +7,12 @@ const context=vm.createContext({window:{cloud,addEventListener(){},scrollTo(){}}
 for(const file of ['lessons.js','library-index.js','book-profiles.js','study-paths.js','stories.js','book-studies.js','library.js','library-ui.js','story-reader.js','weekly-docx.js','app.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
 (async()=>{const result=await vm.runInContext(`(async()=>{
 if(bibleStories.length!==171+bibleBookStudies.length||scriptureScenes.length!==3705)throw Error('Catalogue totals');
+const samuelRun=bibleBookStudies.filter(s=>s.chapters[0][0]===8);
+if(samuelRun.length!==4||samuelRun[0].text!=='1 Samuel 1:1–18'||samuelRun.at(-1).text!=='1 Samuel 3:1–21'||samuelRun.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Samuel opening stories');
+renderStoryCollection(8);
+if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 4 studies'))throw Error('Samuel book route');
+const samuelDedication=await prepareStudy(92001);
+if(samuelDedication.verses.length!==21||samuelDedication.verses.at(-1)[0]!=='1 Samuel 2:11')throw Error('Samuel cross chapter reading');
 const seen=new Set();let verses=0;
 for(const s of scriptureScenes){const book=await loadBook(s.book),ch=book.chapters[s.chapter-1];if(s.start<1||s.end>ch.verses.length||s.end<s.start)throw Error('Bad episode');for(let v=s.start;v<=s.end;v++){const key=s.book+':'+s.chapter+':'+v;if(seen.has(key))throw Error('Duplicate coverage');seen.add(key);verses++}}
 if(verses!==31102||storyCoverage.some(x=>x.covered!==x.verses))throw Error('Coverage gap');
