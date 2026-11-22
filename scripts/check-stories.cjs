@@ -8,9 +8,9 @@ for(const file of ['lessons.js','library-index.js','book-profiles.js','study-pat
 (async()=>{const result=await vm.runInContext(`(async()=>{
 if(bibleStories.length!==171+bibleBookStudies.length||scriptureScenes.length!==3705)throw Error('Catalogue totals');
 const samuelRun=bibleBookStudies.filter(s=>s.chapters[0][0]===8);
-if(samuelRun.length!==4||samuelRun[0].text!=='1 Samuel 1:1–18'||samuelRun.at(-1).text!=='1 Samuel 3:1–21'||samuelRun.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Samuel opening stories');
+if(samuelRun.length!==8||samuelRun[0].text!=='1 Samuel 1:1–18'||samuelRun.at(-1).text!=='1 Samuel 7:2–17'||samuelRun.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Samuel opening stories');
 renderStoryCollection(8);
-if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 4 studies'))throw Error('Samuel book route');
+if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 8 studies'))throw Error('Samuel book route');
 const samuelDedication=await prepareStudy(92001);
 if(samuelDedication.verses.length!==21||samuelDedication.verses.at(-1)[0]!=='1 Samuel 2:11')throw Error('Samuel cross chapter reading');
 const seen=new Set();let verses=0;
