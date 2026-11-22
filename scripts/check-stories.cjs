@@ -8,9 +8,17 @@ for(const file of ['lessons.js','library-index.js','book-profiles.js','study-pat
 (async()=>{const result=await vm.runInContext(`(async()=>{
 if(bibleStories.length!==171+bibleBookStudies.length||scriptureScenes.length!==3705)throw Error('Catalogue totals');
 const samuelRun=bibleBookStudies.filter(s=>s.chapters[0][0]===8);
-if(samuelRun.length!==11||samuelRun[0].text!=='1 Samuel 1:1–18'||samuelRun.at(-1).text!=='1 Samuel 10:1–27'||samuelRun.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Samuel opening stories');
+if(samuelRun.length!==33||samuelRun[0].text!=='1 Samuel 1:1–18'||samuelRun.at(-1).text!=='1 Samuel 31:1–13'||samuelRun.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Complete Samuel stories');
 renderStoryCollection(8);
-if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 11 studies'))throw Error('Samuel book route');
+if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 33 studies'))throw Error('Samuel book route');
+$('#moreStories').click();
+if(!$('#storyResults').innerHTML.includes('The Men of Jabesh Bring Saul Home')||!$('#moreStories').hidden)throw Error('Samuel final page');
+const samuelEnding=await prepareStudy(92032);
+if(samuelEnding.verses.length!==13||samuelEnding.verses[0][0]!=='1 Samuel 31:1'||samuelEnding.verses.at(-1)[0]!=='1 Samuel 31:13')throw Error('Samuel final Scripture');
+state.notes[92032]={q0:'Gratitude remembered the rescue of Jabesh.'};
+const samuelWord=buildStudyDocx([{id:92032,lesson:samuelEnding}],{from:'2026-11-16',to:'2026-11-22',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
+const samuelXml=new TextDecoder().decode(samuelWord);
+if(!samuelXml.includes('Gratitude remembered the rescue of Jabesh.')||!samuelXml.includes('1 Samuel 31:13')||!samuelXml.includes('The book closes in mourning.'))throw Error('Samuel notes and Word export');
 const samuelDedication=await prepareStudy(92001);
 if(samuelDedication.verses.length!==21||samuelDedication.verses.at(-1)[0]!=='1 Samuel 2:11')throw Error('Samuel cross chapter reading');
 const seen=new Set();let verses=0;
@@ -19,7 +27,7 @@ if(verses!==31102||storyCoverage.some(x=>x.covered!==x.verses))throw Error('Cove
 for(const s of bibleStories){const l=await prepareStudy(s.id);if(!l.story.length||!l.verses.length||l.questions.length!==3||!l.meaning.length)throw Error('Incomplete story '+s.id);for(const[b,c]of s.chapters)if(!bibleBooks[b]||c<1||c>bibleBooks[b].chapters)throw Error('Invalid reference')}
 renderStoryHome();if(!app.innerHTML.includes('Stories from your examples')||!app.innerHTML.includes('The Prophet Who Turned Back'))throw Error('Home presentation');
 $('#storyBook').value='all';$('#storyQuery').value='';renderStoryCollection();
-if ($('#storyCollection').value!=='books'||app.innerHTML.includes('value="expanded"')||!$('#storyCount').textContent.endsWith('of '+bibleBookStudies.length+' studies')||!$('#storyResults').innerHTML.includes('The Family Into Which Jesus Came'))throw Error('Default book-by-book collection');
+if ($('#storyCollection').value!=='books'||app.innerHTML.includes('value="expanded"')||!$('#storyCount').textContent.endsWith('of '+bibleBookStudies.length+' studies')||!$('#storyResults').innerHTML.includes(esc(bibleBookStudies[0].title)))throw Error('Default book-by-book collection');
 $('#storyCollection').value='retellings';$('#storyCollection').events.change();if(!$('#storyCount').textContent.includes(String(bibleStories.length)))throw Error('Story listing');
 $('#storyQuery').value='The Prophet Who Turned Back';$('#storyQuery').events.input();if(!$('#storyCount').textContent.includes('1 of 1'))throw Error('Search');
 for (const s of bibleBookStudies) {

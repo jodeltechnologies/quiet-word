@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 # Preserve these allocations when publishing subsequent batches.
 BOOKS = [
-    (8, '1 Samuel', 92000, 11, 10),
+    (8, '1 Samuel', 92000, 33),
     (39, 'Matthew', 91000, 71),
     (40, 'Mark', 91071, 35),
     (41, 'Luke', 91106, 61),
