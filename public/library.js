@@ -4,6 +4,25 @@ bibleBooks.forEach((b,i)=>{b.name=b.name.replace(/^I /,'1 ').replace(/^II /,'2 '
 const CHAPTER_STUDIES=lessons.length;
 for (const study of bibleBookStudies) bibleStories.push(study);
 for(const s of [...bibleStories,...scriptureScenes])lessons[s.id]=s;
+// Older journal links open the fuller text under their saved study IDs.
+for (const replacement of [
+  {id:90200,title:'Eli and His Sons',studies:[92002,92003,92004]},
+  {id:90201,title:'David Nathan and Solomon',studies:[92510,92511]},
+  {id:90202,title:'The Prophet Who Turned Back',studies:[93016]}
+]) {
+  const studies=replacement.studies.map(id=>lessons[id]);
+  const first=studies[0],last=studies.at(-1);
+  const firstChapter=first.chapters[0][1],lastChapter=last.chapters.at(-1)[1];
+  const chapterNumbers=[...new Set(studies.flatMap(study=>study.chapters.map(([,chapter])=>chapter)))];
+  lessons[replacement.id]={
+    ...first,id:replacement.id,title:replacement.title,sequenceId:last.id,
+    text:first.category+' '+firstChapter+':'+first.start+'–'+(firstChapter===lastChapter?'':lastChapter+':')+last.end,
+    chapters:chapterNumbers.map(chapter=>[first.chapters[0][0],chapter]),
+    end:last.end,story:studies.flatMap(study=>study.story),
+    lesson:studies.map(study=>study.lesson).join('\n\n')
+  };
+}
+
 const TOTAL_STUDIES=lessons.length,bookCache=new Map();
 async function loadBook(i){if(bookCache.has(i))return bookCache.get(i);const promise=fetch(`./data/${String(i).padStart(2,'0')}.json`).then(r=>{if(!r.ok)throw Error('This book is unavailable. Connect to the internet and retry.');return r.json()}).catch(e=>{bookCache.delete(i);throw e});bookCache.set(i,promise);return promise}
 const chapterId=(b,c)=>bookOffsets[b]+c-1;

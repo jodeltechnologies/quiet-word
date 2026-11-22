@@ -6,7 +6,7 @@ const cloud={unlocked:true,capture(){this.captured=true},async sync(){}};
 const context=vm.createContext({window:{cloud,addEventListener(){},scrollTo(){}},cloud,document,navigator:{},localStorage:{getItem(){return null},setItem(){}},location:{hash:'#home'},TextEncoder,TextDecoder,Uint8Array,Uint32Array,DataView,Map,Set,Intl,Date,URLSearchParams,console,setTimeout(){},clearTimeout(){},fetch:async url=>({ok:true,json:async()=>JSON.parse(fs.readFileSync(path.join(root,url),'utf8'))})});
 for(const file of ['lessons.js','library-index.js','book-profiles.js','study-paths.js','stories.js','book-studies.js','library.js','library-ui.js','story-reader.js','weekly-docx.js','app.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
 (async()=>{const result=await vm.runInContext(`(async()=>{
-if(bibleStories.length!==171+bibleBookStudies.length||scriptureScenes.length!==3705)throw Error('Catalogue totals');
+if(bibleStories.length!==168+bibleBookStudies.length||scriptureScenes.length!==3705)throw Error('Catalogue totals');
 const samuelRun=bibleBookStudies.filter(s=>s.chapters[0][0]===8);
 if(samuelRun.length!==33||samuelRun[0].text!=='1 Samuel 1:1–18'||samuelRun.at(-1).text!=='1 Samuel 31:1–13'||samuelRun.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Complete Samuel stories');
 renderStoryCollection(8);
@@ -34,6 +34,25 @@ state.notes[92526]={q0:'David accepted responsibility and paid for the offering.
 const secondSamuelWord=buildStudyDocx([{id:92526,lesson:secondSamuelEnd}],{from:'2026-11-16',to:'2026-11-22',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
 const secondSamuelXml=new TextDecoder().decode(secondSamuelWord);
 if(!secondSamuelXml.includes('David accepted responsibility and paid for the offering.')||!secondSamuelXml.includes('2 Samuel 24:25')||!secondSamuelXml.includes('David built the altar'))throw Error('Second Samuel journal Word export');
+const firstKings=bibleBookStudies.filter(s=>s.chapters[0][0]===10);
+if(firstKings.length!==27||firstKings[0].text!=='1 Kings 1:1–27'||firstKings.at(-1).text!=='1 Kings 22:1–53'||firstKings.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Complete first Kings');
+renderStoryCollection(10);
+if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 27 studies'))throw Error('First Kings book route');
+$('#moreStories').click();
+if(!$('#storyResults').innerHTML.includes('The Warning Ahab Put in Prison')||!$('#moreStories').hidden)throw Error('First Kings final page');
+if(bibleStories.some(s=>[90200,90201,90202].includes(s.id)))throw Error('Redundant shorter listings');
+for(const id of [90200,90201,90202]){
+ const replacement=await prepareStudy(id);
+ if(replacement.id!==id||replacement.story.join(' ').split(' ').length<400||!replacement.verses.length)throw Error('Older journal replacement '+id);
+}
+location.hash='#study/90202';
+await studyNarrative(90202);
+if(!app.innerHTML.includes('#study/93017')||!app.innerHTML.includes('The chapter then returns to Jeroboam'))throw Error('Older link fuller reader and next');
+const kingsEnding=await prepareStudy(93026);
+state.notes[93026]={q0:'Micaiah spoke the warning clearly.'};
+const kingsWord=buildStudyDocx([{id:93026,lesson:kingsEnding}],{from:'2026-11-16',to:'2026-11-22',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
+const kingsXml=new TextDecoder().decode(kingsWord);
+if(kingsEnding.verses.length!==53||!kingsXml.includes('1 Kings 22:53')||!kingsXml.includes('Micaiah spoke the warning clearly.'))throw Error('First Kings Word journal');
 const seen=new Set();let verses=0;
 for(const s of scriptureScenes){const book=await loadBook(s.book),ch=book.chapters[s.chapter-1];if(s.start<1||s.end>ch.verses.length||s.end<s.start)throw Error('Bad episode');for(let v=s.start;v<=s.end;v++){const key=s.book+':'+s.chapter+':'+v;if(seen.has(key))throw Error('Duplicate coverage');seen.add(key);verses++}}
 if(verses!==31102||storyCoverage.some(x=>x.covered!==x.verses))throw Error('Coverage gap');
@@ -115,7 +134,7 @@ if ($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWit
 const household=bibleBookStudies.find(s=>s.text==='Ephesians 5:22–6:9');
 const householdStudy=await prepareStudy(household.id);
 if(householdStudy.verses.length!==21||householdStudy.verses[11][0]!=='Ephesians 5:33'||householdStudy.verses[12][0]!=='Ephesians 6:1') throw Error('Ephesians chapter transition');
-location.hash='#study/90200';await studyNarrative(90200);if(!app.innerHTML.includes('Spiritual lessons')||!app.innerHTML.includes('The account began with wrongdoing'))throw Error('Narrative reader');
+location.hash='#study/90200';await studyNarrative(90200);if(!app.innerHTML.includes('Spiritual lessons')||!app.innerHTML.includes('service at Shiloh takes place'))throw Error('Narrative reader');
 $('#q0').value='I need to act on a responsibility I have avoided.';$('#q0').oninput();if(!state.notes[90200]?.q0||!state.dates[90200]||!cloud.captured)throw Error('Notes contract');
 $('#complete').onclick();if(!state.complete.includes(90200))throw Error('Progress');
 const l=await prepareStudy(90200);window.storyDocx=buildStudyDocx([{id:90200,lesson:l}],{from:'2026-11-02',to:'2026-11-08',mode:'journal',includeBible:false,includeCommentary:true,notes:state.notes,progress:state.complete});

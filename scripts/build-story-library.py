@@ -26,7 +26,8 @@ for n,s in enumerate(raw):
  body=dict(story=s['story'],source='Jesse Lyman Hurlbut, Story of the Bible, 1904. Distributed by Heritage History 2009.',sourceUrl=s['url'])
  (D/f'{n:03}.json').write_text(json.dumps(body,ensure_ascii=False,separators=(',',':')))
  stories.append(dict(id=90000+n,title=s['title'],subtitle=focus,text=citation(chapters),chapters=chapters,kind='story',category='Old Testament'if n<109 else 'Jesus and His teaching'if n<147 else 'The early church and Revelation',file=f'{n:03}',lesson=lesson,question=question,wordCount=sum(len(p.split())for p in s['story']),source='Hurlbut 1904'))
-for n,s in enumerate(json.loads((R/'source/featured.json').read_text())):
+featured=json.loads((R/'source/featured.json').read_text())
+for n,s in enumerate(featured):
  body=dict(story=s.pop('story'),source='Original Quiet Time retelling based on the cited Scripture.',sourceUrl='')
  file='featured-'+str(n);(D/(file+'.json')).write_text(json.dumps(body,ensure_ascii=False,separators=(',',':')))
  s.update(kind='story',category='Guided spiritual studies',file=file,wordCount=sum(len(p.split())for p in body['story']),source='Quiet Time')
@@ -55,7 +56,7 @@ for b,book in enumerate(books):
   verse_offset+=len(ch['verses'])
  total=sum(len(ch['verses'])for ch in book['chapters']);assert count==total
  coverage.append(dict(book=b,verses=total,covered=count,episodes=sum(s['book']==b for s in scenes)))
-assert verse_offset==31102 and len(stories)==171
+assert verse_offset==31102 and len(stories)==len(raw)+len(featured)
 (P/'stories.js').write_text('/* Stable story IDs and verse-coordinate episode IDs. */\nconst bibleStories='+json.dumps(stories,ensure_ascii=False,separators=(',',':'))+';\nconst scriptureScenes='+json.dumps(scenes,ensure_ascii=False,separators=(',',':'))+';\nconst storyCoverage='+json.dumps(coverage,separators=(',',':'))+';\n')
-(P/'story-data/sources.json').write_text(json.dumps(dict(retelling='Jesse Lyman Hurlbut, Story of the Bible, 1904',edition='Distributed by Heritage History 2009',originalCopyright='Original Copyright 1904 by Jesse Lyman Hurlbut',url='https://www.heritage-history.com/index.php?author=hurlbut&book=bible&c=read',use='Personal and educational use with attribution. Retelling text is reproduced without alteration. Historical retellings are interpretation, not biblical quotations.',retellingCount=168,originalStudyCount=3,sceneCount=len(scenes),bibleVersesCovered=31102,sourceSha256=hashlib.sha256((R/'source/retellings.json').read_bytes()).hexdigest()),indent=2))
+(P/'story-data/sources.json').write_text(json.dumps(dict(retelling='Jesse Lyman Hurlbut, Story of the Bible, 1904',edition='Distributed by Heritage History 2009',originalCopyright='Original Copyright 1904 by Jesse Lyman Hurlbut',url='https://www.heritage-history.com/index.php?author=hurlbut&book=bible&c=read',use='Personal and educational use with attribution. Retelling text is reproduced without alteration. Historical retellings are interpretation, not biblical quotations.',retellingCount=168,originalStudyCount=len(featured),sceneCount=len(scenes),bibleVersesCovered=31102,sourceSha256=hashlib.sha256((R/'source/retellings.json').read_bytes()).hexdigest()),indent=2))
 print(json.dumps(dict(retellings=len(stories),episodes=len(scenes),books=len(coverage),versesCovered=verse_offset,dataBytes=sum(p.stat().st_size for p in D.glob('*.json')))))
