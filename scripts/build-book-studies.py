@@ -31,6 +31,8 @@ BOOKS = [
     (30, 'Obadiah', 103000, 2),
     (31, 'Jonah', 103500, 2),
     (32, 'Micah', 104000, 3),
+    (33, 'Nahum', 104500, 2),
+    (34, 'Habakkuk', 105000, 2),
     (39, 'Matthew', 91000, 71),
     (40, 'Mark', 91071, 35),
     (41, 'Luke', 91106, 61),
@@ -55,6 +57,8 @@ BOOKS = [
     (60, '2 Peter', 91550, 4),
     (61, '1 John', 91600, 3),
     (62, '2 John', 91650, 1),
+    (63, '3 John', 91700, 1),
+    (64, 'Jude', 91750, 2),
 ]
 stories = []
 for book, name, first_id, count, *published_chapters in BOOKS:

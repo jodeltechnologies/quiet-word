@@ -251,7 +251,7 @@ for(const [id,last] of [[100525,'Ezekiel 48:35'],[101012,'Daniel 12:13'],[91395,
  if(lesson.verses.at(-1)[0]!==last)throw Error('Four book ending '+id);
 }
 // Verify every new study's reader, notes, Scripture and Word boundaries.
-const nextBatch=[[27,9,101500,'Hosea 14:9'],[28,3,102000,'Joel 3:21'],[57,9,91400,'Hebrews 13:25'],[58,5,91450,'James 5:20'],[29,7,102500,'Amos 9:15'],[30,2,103000,'Obadiah 1:21'],[59,9,91500,'1 Peter 5:14'],[60,4,91550,'2 Peter 3:18'],[31,2,103500,'Jonah 4:11'],[32,3,104000,'Micah 7:20'],[61,3,91600,'1 John 5:21'],[62,1,91650,'2 John 1:13']];
+const nextBatch=[[27,9,101500,'Hosea 14:9'],[28,3,102000,'Joel 3:21'],[57,9,91400,'Hebrews 13:25'],[58,5,91450,'James 5:20'],[29,7,102500,'Amos 9:15'],[30,2,103000,'Obadiah 1:21'],[59,9,91500,'1 Peter 5:14'],[60,4,91550,'2 Peter 3:18'],[31,2,103500,'Jonah 4:11'],[32,3,104000,'Micah 7:20'],[61,3,91600,'1 John 5:21'],[62,1,91650,'2 John 1:13'],[33,2,104500,'Nahum 3:19'],[34,2,105000,'Habakkuk 3:19'],[63,1,91700,'3 John 1:14'],[64,2,91750,'Jude 1:25']];
 for(const [book,count,first,lastVerse] of nextBatch){
  const run=bibleBookStudies.filter(s=>s.chapters[0][0]===book);
  if(run.length!==count||run[0].id!==first||run.at(-1).id!==first+count-1)throw Error('New batch allocations '+book);
@@ -272,7 +272,7 @@ for(const [book,count,first,lastVerse] of nextBatch){
  const ending=await prepareStudy(first+count-1);
  if(ending.verses.at(-1)[0]!==lastVerse)throw Error('New book ending '+book);
 }
-for(const [last,next] of [[101012,101500],[101508,102000],[102002,102500],[102506,103000],[103001,103500],[103501,104000],[104002,91000],[91397,91400],[91408,91450],[91454,91500],[91508,91550],[91553,91600],[91602,91650]]){
+for(const [last,next] of [[101012,101500],[101508,102000],[102002,102500],[102506,103000],[103001,103500],[103501,104000],[104002,104500],[104501,105000],[105001,91000],[91397,91400],[91408,91450],[91454,91500],[91508,91550],[91553,91600],[91602,91650],[91650,91700],[91700,91750]]){
  if(orderedStoryIds[orderedStoryIds.indexOf(last)+1]!==next)throw Error('New canonical transition '+last);
 }
 const lamentationsFull=bibleBookStudies.filter(s=>s.chapters[0][0]===24);
