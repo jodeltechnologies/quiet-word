@@ -8,6 +8,8 @@ ROOT = Path(__file__).resolve().parent.parent
 BOOKS = [
     (0, 'Genesis', 108000, 14),
     (1, 'Exodus', 108500, 13),
+    (2, 'Leviticus', 109000, 7),
+    (3, 'Numbers', 109500, 10),
     (8, '1 Samuel', 92000, 33),
     (9, '2 Samuel', 92500, 27),
     (10, '1 Kings', 93000, 27),
