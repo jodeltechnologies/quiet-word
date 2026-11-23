@@ -217,6 +217,30 @@ if(ephesiansLast.verses.length!==15||!ephesiansXml.includes('Ephesians 6:24')||!
 location.hash='#study/97017';await studyNarrative(97017);
 if(!app.innerHTML.includes('<sup>29:25</sup>')||!app.innerHTML.includes('<sup>30:1</sup>')||!app.innerHTML.includes('<sup>31:40</sup>')||!app.innerHTML.includes('#study/97018'))throw Error('Job multichapter reader');
 if(bibleBookStudies.some(s=>s.chapters[0][0]===18))throw Error('Psalms fuller rewrite was not requested');
+const proverbsFull=bibleBookStudies.filter(s=>s.chapters[0][0]===19);
+if(proverbsFull.length!==22||proverbsFull[0].id!==97500||proverbsFull.at(-1).id!==97521||proverbsFull[0].text!=='Proverbs 1:1–33'||proverbsFull.at(-1).text!=='Proverbs 31:1–31'||proverbsFull.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Complete fuller Proverbs');
+renderStoryCollection(19);
+if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 22 studies')||!$('#storyResults').innerHTML.includes('The Mother'))throw Error('Proverbs book route');
+if(orderedStoryIds[orderedStoryIds.indexOf(97022)+1]!==97500||orderedStoryIds[orderedStoryIds.indexOf(97521)+1]!==91000)throw Error('Proverbs canonical sequence without Psalms');
+const proverbsJoined=await prepareStudy(97509);
+if(proverbsJoined.verses.length!==63||proverbsJoined.verses[31][0]!=='Proverbs 10:32'||proverbsJoined.verses[32][0]!=='Proverbs 11:1')throw Error('Proverbs connected reader range');
+location.hash='#study/97509';await studyNarrative(97509);
+if(!app.innerHTML.includes('<sup>10:32</sup>')||!app.innerHTML.includes('<sup>11:1</sup>')||!app.innerHTML.includes('#study/97510'))throw Error('Proverbs multichapter reader');
+state.notes[97521]={q0:'Honour faithful work and defend the vulnerable.'};
+const proverbsLast=await prepareStudy(97521);
+const proverbsWord=buildStudyDocx([{id:97521,lesson:proverbsLast}],{from:'2026-11-23',to:'2026-11-29',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
+const proverbsXml=new TextDecoder().decode(proverbsWord);
+if(proverbsLast.verses.length!==31||!proverbsXml.includes('Proverbs 31:31')||!proverbsXml.includes('Honour faithful work and defend the vulnerable.'))throw Error('Proverbs Word journal');
+const philippiansFull=bibleBookStudies.filter(s=>s.chapters[0][0]===49);
+if(philippiansFull.length!==7||philippiansFull[0].id!==91350||philippiansFull.at(-1).id!==91356||philippiansFull[0].text!=='Philippians 1:1–11'||philippiansFull.at(-1).text!=='Philippians 4:10–23'||philippiansFull.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Complete fuller Philippians');
+renderStoryCollection(49);
+if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 7 studies')||!$('#storyResults').innerHTML.includes('The Gift That Reached Paul Again'))throw Error('Philippians book route');
+state.notes[91356]={q0:'Practise contentment and share practical help.'};
+const philippiansLast=await prepareStudy(91356);
+const philippiansWord=buildStudyDocx([{id:91356,lesson:philippiansLast}],{from:'2026-11-23',to:'2026-11-29',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
+const philippiansXml=new TextDecoder().decode(philippiansWord);
+if(philippiansLast.verses.length!==14||!philippiansXml.includes('Philippians 4:23')||!philippiansXml.includes('Practise contentment and share practical help.'))throw Error('Philippians stable notes and Word');
+
 const seen=new Set();let verses=0;
 for(const s of scriptureScenes){const book=await loadBook(s.book),ch=book.chapters[s.chapter-1];if(s.start<1||s.end>ch.verses.length||s.end<s.start)throw Error('Bad episode');for(let v=s.start;v<=s.end;v++){const key=s.book+':'+s.chapter+':'+v;if(seen.has(key))throw Error('Duplicate coverage');seen.add(key);verses++}}
 if(verses!==31102||storyCoverage.some(x=>x.covered!==x.verses))throw Error('Coverage gap');
