@@ -4,7 +4,9 @@ function element(key){if(!nodes.has(key))nodes.set(key,{innerHTML:'',textContent
 const document={querySelector:element,getElementById:id=>element('#'+id),querySelectorAll:s=>s==='[data-key]'?['q0','q1','q2','response'].map(k=>Object.assign(element('#'+k),{dataset:{key:k},value:''})):[],body:{classList:{toggle(){}}},documentElement:{style:{setProperty(){}}},activeElement:null};
 const cloud={unlocked:true,capture(){this.captured=true},async sync(){}};
 const context=vm.createContext({window:{cloud,addEventListener(){},scrollTo(){}},cloud,document,navigator:{},localStorage:{getItem(){return null},setItem(){}},location:{hash:'#home'},TextEncoder,TextDecoder,Uint8Array,Uint32Array,DataView,Map,Set,Intl,Date,URLSearchParams,console,setTimeout(){},clearTimeout(){},fetch:async url=>({ok:true,json:async()=>JSON.parse(fs.readFileSync(path.join(root,url),'utf8'))})});
-for(const file of ['lessons.js','library-index.js','book-profiles.js','study-paths.js','stories.js','book-studies.js','library.js','library-ui.js','story-reader.js','weekly-docx.js','app.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
+context.Blob=Blob;context.URL={createObjectURL(blob){context.window.downloadBlob=blob;return 'blob:test-course'},revokeObjectURL(){}};
+document.createElement=()=>({click(){context.window.downloadName=this.download}});
+for(const file of ['lessons.js','library-index.js','book-profiles.js','study-paths.js','stories.js','book-studies.js','spiritual-teachings.js','spiritual-reader.js','library.js','library-ui.js','story-reader.js','weekly-docx.js','app.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
 (async()=>{const result=await vm.runInContext(`(async()=>{
 if(bibleStories.length!==168+bibleBookStudies.length||scriptureScenes.length!==3705)throw Error('Catalogue totals');
 const samuelRun=bibleBookStudies.filter(s=>s.chapters[0][0]===8);
@@ -116,6 +118,34 @@ const corinthiansEndingXml=new TextDecoder().decode(corinthiansEndingWord);
 if(corinthiansEnding.verses.length!==24||!corinthiansEndingXml.includes('1 Corinthians 16:24')||!corinthiansEndingXml.includes('Plan a practical gift of love.'))throw Error('Fuller Corinthians ending Word export');
 location.hash='#study/91307';await studyNarrative(91307);
 if(!app.innerHTML.includes('ten thousand')||!app.innerHTML.includes('#study/91308')||!app.innerHTML.includes('<sup>14:25</sup>'))throw Error('Fuller Corinthians stable reader link');
+if(spiritualTeachings.length!==13||new Set(spiritualTeachings.map(l=>l.id)).size!==13)throw Error('Teaching IDs');
+if(!renderLibraryRoute('spiritual')||!app.innerHTML.includes('Principalities and Spiritual Realms')||!app.innerHTML.includes('lSwifv92Iqw')||!app.innerHTML.includes('96012'))throw Error('Teaching section and three sources');
+const teachingPack=[];
+for(const item of spiritualTeachings){
+ const prepared=await prepareStudy(item.id);
+ if(prepared.kind!=='teaching'||prepared.questions.length!==3||prepared.story.length!==4||prepared.story.join(' ').split(' ').length<300)throw Error('Incomplete teaching');
+ let at=0;
+ for(const[b,c,start,end]of item.references){
+  const book=await loadBook(b);
+  for(let v=start;v<=end;v++){if(prepared.verses[at][0]!==bibleBooks[b].name+' '+c+':'+v||prepared.verses[at][1]!==book.chapters[c-1].verses[v-1])throw Error('Teaching Scripture range');at++}
+ }
+ if(at!==prepared.verses.length)throw Error('Teaching extra verses');
+ teachingPack.push({id:item.id,lesson:prepared});
+}
+location.hash='#study/96000';await studySpiritual(96000);
+if(!app.innerHTML.includes('#study/96001')||!app.innerHTML.includes('Keep the interpretation clear'))throw Error('Teaching first reader');
+$('#q0').value='I will examine the claim in its Bible context.';$('#q0').oninput();$('#complete').onclick();
+if(!state.notes[96000]?.q0||!state.dates[96000]||!state.complete.includes(96000)||!cloud.captured)throw Error('Teaching journal and completion');
+renderSpiritualHome();if(!app.innerHTML.includes('1 of 13')||!app.innerHTML.includes('href="#study/96001"'))throw Error('Teaching resume');
+location.hash='#study/96012';await studySpiritual(96012);
+if(!app.innerHTML.includes('<table>')||!app.innerHTML.includes('spiritual city')||!app.innerHTML.includes('Review the course')||app.innerHTML.includes('Next lesson'))throw Error('Teaching comparison and final navigation');
+const teachingWord=buildStudyDocx(teachingPack,{from:'2026-11-16',to:'2026-11-22',mode:'pack',includeBible:true,includeCommentary:true,notes:state.notes,progress:state.complete});
+const teachingXml=new TextDecoder().decode(teachingWord);
+if(!teachingXml.includes('The Teaching')||!teachingXml.includes('Colossians 1:16')||!teachingXml.includes('Compare the Claims with Scripture')||!teachingXml.includes('I will examine the claim in its Bible context.'))throw Error('Teaching pack and notes Word export');
+renderWeekly();if(!app.innerHTML.includes('value="teachingpack"'))throw Error('Teaching download option');
+$('#exportMode').value='teachingpack';$('#exportWeek').value='2026-11-23';$('#exportBible').checked=true;$('#exportCommentary').checked=true;$('#exportMode').onchange();await $('#downloadWeek').onclick();
+if(!window.downloadBlob||!window.downloadName.endsWith('.docx')||!$('#weeklyStatus').textContent.includes('13 studies')||$('#downloadWeek').disabled)throw Error('Teaching download control');
+
 const seen=new Set();let verses=0;
 for(const s of scriptureScenes){const book=await loadBook(s.book),ch=book.chapters[s.chapter-1];if(s.start<1||s.end>ch.verses.length||s.end<s.start)throw Error('Bad episode');for(let v=s.start;v<=s.end;v++){const key=s.book+':'+s.chapter+':'+v;if(seen.has(key))throw Error('Duplicate coverage');seen.add(key);verses++}}
 if(verses!==31102||storyCoverage.some(x=>x.covered!==x.verses))throw Error('Coverage gap');

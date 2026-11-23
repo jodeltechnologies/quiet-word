@@ -1,7 +1,7 @@
 const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict'),path=require('path');
 const root=path.resolve(__dirname,'../public');
 const context=vm.createContext({window:{},TextEncoder,Uint8Array,Uint32Array,DataView,Map,Set,Intl,Date,URLSearchParams,console,fetch:async url=>({ok:true,json:async()=>JSON.parse(fs.readFileSync(path.join(root,url),'utf8'))})});
-for(const file of ['lessons.js','library-index.js','book-profiles.js','study-paths.js','stories.js','book-studies.js','library.js','story-reader.js','weekly-docx.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
+for(const file of ['lessons.js','library-index.js','book-profiles.js','study-paths.js','stories.js','book-studies.js','spiritual-teachings.js','spiritual-reader.js','library.js','story-reader.js','weekly-docx.js'])vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),context,{filename:file});
 (async()=>{await vm.runInContext(`(async()=>{
 if(bibleBooks.length!==66||bookProfiles.length!==66||CHAPTER_STUDIES!==1196||bibleStories.length!==168+bibleBookStudies.length)throw Error('Library totals');
 let chapters=0,verses=0;

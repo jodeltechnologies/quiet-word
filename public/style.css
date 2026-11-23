@@ -8,3 +8,5 @@
 #recoveryCode{width:100%;font:14px/1.5 monospace;overflow-wrap:anywhere;letter-spacing:0}#recoveryDialog{max-width:540px}#recoveryDialog .toolbar{flex-wrap:wrap}
 
 .storycard{display:block}.storycard h2{font-size:25px;line-height:1.25;margin:14px 0}.storyfocus{font-weight:600}.storybody p{margin-bottom:24px}.storylinks{flex-wrap:wrap}.storylinks a{font-size:14px}#storyCollection,#storyBook{margin-bottom:18px}
+
+.teachingComparison{max-width:100%;overflow-x:auto}.teachingComparison table{width:100%;min-width:640px;border-collapse:collapse;font-size:14px;line-height:1.7}.teachingComparison th,.teachingComparison td{text-align:left;vertical-align:top;padding:14px;border:1px solid var(--line);overflow-wrap:anywhere}.teachingComparison th{background:var(--soft)}
