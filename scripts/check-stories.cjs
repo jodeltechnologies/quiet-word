@@ -241,7 +241,7 @@ for(const [book,count,first,start,end,title] of batchBooks){
  const xml=new TextDecoder().decode(doc);
  if(!xml.includes('Batch journal note for '+book)||!xml.includes(lesson.verses.at(-1)[0]))throw Error('Four book Word journal '+book);
 }
-if(orderedStoryIds[orderedStoryIds.indexOf(100525)+1]!==101000||orderedStoryIds[orderedStoryIds.indexOf(101012)+1]!==91000)throw Error('Ezekiel Daniel canonical navigation');
+if(orderedStoryIds[orderedStoryIds.indexOf(100525)+1]!==101000||orderedStoryIds[orderedStoryIds.indexOf(101012)+1]!==101500)throw Error('Ezekiel Daniel canonical navigation');
 location.hash='#study/100503';await studyNarrative(100503);
 if(!app.innerHTML.includes('<sup>8:1</sup>')||!app.innerHTML.includes('<sup>11:25</sup>')||app.innerHTML.includes('<sup>12:1</sup>'))throw Error('Ezekiel temple vision reader boundaries');
 const danielSplit=await prepareStudy(101010),danielAfter=await prepareStudy(101011);
@@ -249,6 +249,31 @@ if(danielSplit.verses.at(-1)[0]!=='Daniel 11:20'||danielAfter.verses[0][0]!=='Da
 for(const [id,last] of [[100525,'Ezekiel 48:35'],[101012,'Daniel 12:13'],[91395,'Titus 3:15'],[91397,'Philemon 1:25']]){
  const lesson=await prepareStudy(id);
  if(lesson.verses.at(-1)[0]!==last)throw Error('Four book ending '+id);
+}
+// Verify every new study's reader, notes, Scripture and Word boundaries.
+const nextBatch=[[27,9,101500,'Hosea 14:9'],[28,3,102000,'Joel 3:21'],[57,9,91400,'Hebrews 13:25'],[58,5,91450,'James 5:20']];
+for(const [book,count,first,lastVerse] of nextBatch){
+ const run=bibleBookStudies.filter(s=>s.chapters[0][0]===book);
+ if(run.length!==count||run[0].id!==first||run.at(-1).id!==first+count-1)throw Error('New batch allocations '+book);
+ renderStoryCollection(book);
+ if(!$('#storyCount').textContent.endsWith('of '+count+' studies'))throw Error('New batch collection '+book);
+ for(const entry of run){
+  if(entry.story.length!==4||entry.story.join(' ').split(' ').length<400)throw Error('New fuller study length '+entry.id);
+  location.hash='#study/'+entry.id;await studyNarrative(entry.id);
+  $('#q0').value='Preserved new study note '+entry.id;$('#q0').oninput();
+  const prepared=await prepareStudy(entry.id);
+  const firstRef=bibleBooks[book].name+' '+entry.chapters[0][1]+':'+entry.start;
+  const lastRef=bibleBooks[book].name+' '+entry.chapters.at(-1)[1]+':'+entry.end;
+  if(prepared.verses[0][0]!==firstRef||prepared.verses.at(-1)[0]!==lastRef)throw Error('New Scripture bounds '+entry.id);
+  const doc=buildStudyDocx([{id:entry.id,lesson:prepared}],{from:'2026-11-23',to:'2026-11-29',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
+  const xml=new TextDecoder().decode(doc);
+  if(!xml.includes('Preserved new study note '+entry.id)||!xml.includes(firstRef)||!xml.includes(lastRef)||!xml.includes(entry.title.replaceAll("'",'&apos;')))throw Error('New Word content '+entry.id);
+ }
+ const ending=await prepareStudy(first+count-1);
+ if(ending.verses.at(-1)[0]!==lastVerse)throw Error('New book ending '+book);
+}
+for(const [last,next] of [[101012,101500],[101508,102000],[102002,91000],[91397,91400],[91408,91450]]){
+ if(orderedStoryIds[orderedStoryIds.indexOf(last)+1]!==next)throw Error('New canonical transition '+last);
 }
 const lamentationsFull=bibleBookStudies.filter(s=>s.chapters[0][0]===24);
 if(lamentationsFull.length!==7||lamentationsFull[0].id!==100000||lamentationsFull.at(-1).id!==100006||lamentationsFull[0].text!=='Lamentations 1:1–22'||lamentationsFull.at(-1).text!=='Lamentations 5:1–22'||lamentationsFull.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Complete fuller Lamentations');
