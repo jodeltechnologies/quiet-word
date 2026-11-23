@@ -146,6 +146,29 @@ renderWeekly();if(!app.innerHTML.includes('value="teachingpack"'))throw Error('T
 $('#exportMode').value='teachingpack';$('#exportWeek').value='2026-11-23';$('#exportBible').checked=true;$('#exportCommentary').checked=true;$('#exportMode').onchange();await $('#downloadWeek').onclick();
 if(!window.downloadBlob||!window.downloadName.endsWith('.docx')||!$('#weeklyStatus').textContent.includes('13 studies')||$('#downloadWeek').disabled)throw Error('Teaching download control');
 
+const nehemiah=bibleBookStudies.filter(s=>s.chapters[0][0]===15);
+if(nehemiah.length!==13||nehemiah[0].text!=='Nehemiah 1:1–11'||nehemiah.at(-1).text!=='Nehemiah 13:1–31'||nehemiah.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Complete fuller Nehemiah');
+renderStoryCollection(15);
+if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 13 studies')||!$('#storyResults').innerHTML.includes('Nehemiah Returns to Find Promises Neglected')||!$('#moreStories').hidden)throw Error('Nehemiah book route');
+if(orderedStoryIds[orderedStoryIds.indexOf(95009)+1]!==95500)throw Error('Ezra to Nehemiah transition');
+const nehemiahLast=await prepareStudy(95512);
+state.notes[95512]={q0:'A promise needs continuing faithfulness.'};
+const nehemiahWord=buildStudyDocx([{id:95512,lesson:nehemiahLast}],{from:'2026-11-23',to:'2026-11-29',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
+const nehemiahXml=new TextDecoder().decode(nehemiahWord);
+if(nehemiahLast.verses.length!==31||!nehemiahXml.includes('Nehemiah 13:31')||!nehemiahXml.includes('A promise needs continuing faithfulness.'))throw Error('Nehemiah Word journal');
+const secondCorinthians=bibleBookStudies.filter(s=>s.chapters[0][0]===46);
+if(secondCorinthians.length!==15||secondCorinthians[0].id!==91313||secondCorinthians.at(-1).id!==91327||secondCorinthians[0].text!=='2 Corinthians 1:1–11'||secondCorinthians.at(-1).text!=='2 Corinthians 13:1–14'||secondCorinthians.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Complete fuller second Corinthians');
+renderStoryCollection(46);
+if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 15 studies')||!$('#storyResults').innerHTML.includes('Before the Third Visit'))throw Error('Second Corinthians book route');
+const restored=await prepareStudy(91314);
+if(restored.verses.length!==24||restored.verses[0][0]!=='2 Corinthians 1:12'||restored.verses.at(-1)[0]!=='2 Corinthians 2:11')throw Error('Second Corinthians cross chapter range');
+state.notes[91327]={q0:'Seek restoration before personal vindication.'};
+const corinthiansLast=await prepareStudy(91327);
+const secondCorinthiansWord=buildStudyDocx([{id:91327,lesson:corinthiansLast}],{from:'2026-11-23',to:'2026-11-29',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
+const secondCorinthiansXml=new TextDecoder().decode(secondCorinthiansWord);
+if(corinthiansLast.verses.length!==14||!secondCorinthiansXml.includes('2 Corinthians 13:14')||!secondCorinthiansXml.includes('Seek restoration before personal vindication.'))throw Error('Second Corinthians stable notes and Word export');
+location.hash='#study/91314';await studyNarrative(91314);
+if(!app.innerHTML.includes('<sup>1:24</sup>')||!app.innerHTML.includes('<sup>2:1</sup>')||!app.innerHTML.includes('#study/91315'))throw Error('Second Corinthians fuller reader');
 const seen=new Set();let verses=0;
 for(const s of scriptureScenes){const book=await loadBook(s.book),ch=book.chapters[s.chapter-1];if(s.start<1||s.end>ch.verses.length||s.end<s.start)throw Error('Bad episode');for(let v=s.start;v<=s.end;v++){const key=s.book+':'+s.chapter+':'+v;if(seen.has(key))throw Error('Duplicate coverage');seen.add(key);verses++}}
 if(verses!==31102||storyCoverage.some(x=>x.covered!==x.verses))throw Error('Coverage gap');
