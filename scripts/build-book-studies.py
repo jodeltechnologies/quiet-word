@@ -18,6 +18,7 @@ BOOKS = [
     (17, 'Job', 97000, 23),
     # Psalms is intentionally omitted from fuller rewriting at the user's request.
     (19, 'Proverbs', 97500, 22),
+    (20, 'Ecclesiastes', 98000, 12),
     (39, 'Matthew', 91000, 71),
     (40, 'Mark', 91071, 35),
     (41, 'Luke', 91106, 61),
