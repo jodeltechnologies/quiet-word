@@ -217,11 +217,44 @@ if(ephesiansLast.verses.length!==15||!ephesiansXml.includes('Ephesians 6:24')||!
 location.hash='#study/97017';await studyNarrative(97017);
 if(!app.innerHTML.includes('<sup>29:25</sup>')||!app.innerHTML.includes('<sup>30:1</sup>')||!app.innerHTML.includes('<sup>31:40</sup>')||!app.innerHTML.includes('#study/97018'))throw Error('Job multichapter reader');
 if(bibleBookStudies.some(s=>s.chapters[0][0]===18))throw Error('Psalms fuller rewrite was not requested');
+const batchBooks=[
+  [25,26,100500,'Ezekiel 1:1–3:27','Ezekiel 47:1–48:35','The Glory Beside the River'],
+  [26,13,101000,'Daniel 1:1–21','Daniel 12:1–13','Faithfulness in a Foreign Court'],
+  [55,5,91391,'Titus 1:1–9','Titus 3:9–15','The Work Left to Titus in Crete'],
+  [56,2,91396,'Philemon 1:1–7','Philemon 1:8–25','Paul Begins With the Good He Has Heard']
+];
+for(const [book,count,first,start,end,title] of batchBooks){
+ const run=bibleBookStudies.filter(s=>s.chapters[0][0]===book);
+ if(run.length!==count||run[0].id!==first||run.at(-1).id!==first+count-1||run[0].text!==start||run.at(-1).text!==end||run.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Complete fuller batch book '+book);
+ renderStoryCollection(book);
+ if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of '+count+' studies')||!$('#storyResults').innerHTML.includes(title))throw Error('Four book collection route '+book);
+ if(count>24){
+  if($('#moreStories').hidden)throw Error('Ezekiel pagination missing');
+  $('#moreStories').onclick();
+  if(!$('#storyCount').textContent.startsWith('Showing '+count+' of '+count)||!$('#storyResults').innerHTML.includes('The River and the City With a New Name'))throw Error('Ezekiel final studies pagination');
+ }
+ location.hash='#study/'+first;await studyNarrative(first);
+ $('#q0').value='Batch journal note for '+book;$('#q0').oninput();
+ if(state.notes[first]?.q0!=='Batch journal note for '+book||!app.innerHTML.includes('#study/'+(first+1)))throw Error('Four book notes and next '+book);
+ const lesson=await prepareStudy(first);
+ const doc=buildStudyDocx([{id:first,lesson}],{from:'2026-11-23',to:'2026-11-29',mode:'journal',includeBible:true,includeCommentary:false,notes:state.notes,progress:state.complete});
+ const xml=new TextDecoder().decode(doc);
+ if(!xml.includes('Batch journal note for '+book)||!xml.includes(lesson.verses.at(-1)[0]))throw Error('Four book Word journal '+book);
+}
+if(orderedStoryIds[orderedStoryIds.indexOf(100525)+1]!==101000||orderedStoryIds[orderedStoryIds.indexOf(101012)+1]!==91000)throw Error('Ezekiel Daniel canonical navigation');
+location.hash='#study/100503';await studyNarrative(100503);
+if(!app.innerHTML.includes('<sup>8:1</sup>')||!app.innerHTML.includes('<sup>11:25</sup>')||app.innerHTML.includes('<sup>12:1</sup>'))throw Error('Ezekiel temple vision reader boundaries');
+const danielSplit=await prepareStudy(101010),danielAfter=await prepareStudy(101011);
+if(danielSplit.verses.at(-1)[0]!=='Daniel 11:20'||danielAfter.verses[0][0]!=='Daniel 11:21'||danielAfter.verses.at(-1)[0]!=='Daniel 11:45')throw Error('Daniel divided vision boundaries');
+for(const [id,last] of [[100525,'Ezekiel 48:35'],[101012,'Daniel 12:13'],[91395,'Titus 3:15'],[91397,'Philemon 1:25']]){
+ const lesson=await prepareStudy(id);
+ if(lesson.verses.at(-1)[0]!==last)throw Error('Four book ending '+id);
+}
 const lamentationsFull=bibleBookStudies.filter(s=>s.chapters[0][0]===24);
 if(lamentationsFull.length!==7||lamentationsFull[0].id!==100000||lamentationsFull.at(-1).id!==100006||lamentationsFull[0].text!=='Lamentations 1:1–22'||lamentationsFull.at(-1).text!=='Lamentations 5:1–22'||lamentationsFull.some(s=>s.story.length!==4||s.story.join(' ').split(' ').length<400))throw Error('Complete fuller Lamentations');
 renderStoryCollection(24);
 if($('#storyCollection').value!=='books'||!$('#storyCount').textContent.endsWith('of 7 studies')||!$('#storyResults').innerHTML.includes('Remember Us and Renew Our Days'))throw Error('Lamentations book route');
-if(orderedStoryIds[orderedStoryIds.indexOf(100006)+1]!==91000)throw Error('Lamentations canonical next study');
+if(orderedStoryIds[orderedStoryIds.indexOf(100006)+1]!==100500)throw Error('Lamentations canonical next study');
 const lamentationsMiddle=await prepareStudy(100003);
 if(lamentationsMiddle.verses.length!==30||lamentationsMiddle.verses[0][0]!=='Lamentations 3:25'||lamentationsMiddle.verses.at(-1)[0]!=='Lamentations 3:54')throw Error('Lamentations divided third poem');
 location.hash='#study/100000';await studyNarrative(100000);
