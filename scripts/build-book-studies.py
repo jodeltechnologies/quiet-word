@@ -15,6 +15,8 @@ BOOKS = [
     (14, 'Ezra', 95000, 10),
     (15, 'Nehemiah', 95500, 13),
     (16, 'Esther', 96500, 10),
+    (17, 'Job', 97000, 23),
+    # Psalms is intentionally omitted from fuller rewriting at the user's request.
     (39, 'Matthew', 91000, 71),
     (40, 'Mark', 91071, 35),
     (41, 'Luke', 91106, 61),
