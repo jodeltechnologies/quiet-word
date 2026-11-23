@@ -27,6 +27,8 @@ BOOKS = [
     (26, 'Daniel', 101000, 13),
     (27, 'Hosea', 101500, 9),
     (28, 'Joel', 102000, 3),
+    (29, 'Amos', 102500, 7),
+    (30, 'Obadiah', 103000, 2),
     (39, 'Matthew', 91000, 71),
     (40, 'Mark', 91071, 35),
     (41, 'Luke', 91106, 61),
@@ -47,6 +49,8 @@ BOOKS = [
     (56, 'Philemon', 91396, 2),
     (57, 'Hebrews', 91400, 9),
     (58, 'James', 91450, 5),
+    (59, '1 Peter', 91500, 9),
+    (60, '2 Peter', 91550, 4),
 ]
 stories = []
 for book, name, first_id, count, *published_chapters in BOOKS:
