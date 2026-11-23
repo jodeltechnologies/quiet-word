@@ -21,6 +21,7 @@ BOOKS = [
     (20, 'Ecclesiastes', 98000, 12),
     (21, 'Song of Solomon', 98500, 8),
     (22, 'Isaiah', 99000, 38),
+    (23, 'Jeremiah', 99500, 36),
     (39, 'Matthew', 91000, 71),
     (40, 'Mark', 91071, 35),
     (41, 'Luke', 91106, 61),
